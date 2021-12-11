@@ -1,0 +1,10 @@
+LICENSE
+README.md
+setup.py
+pyleetspeak.egg-info/PKG-INFO
+pyleetspeak.egg-info/SOURCES.txt
+pyleetspeak.egg-info/dependency_links.txt
+pyleetspeak.egg-info/requires.txt
+pyleetspeak.egg-info/top_level.txt
+scripts/__init__.py
+scripts/pyleetspeak.py
