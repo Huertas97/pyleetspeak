@@ -1,8 +1,8 @@
 Metadata-Version: 2.1
 Name: pyleetspeak
-Version: 0.0.2
+Version: 0.0.4
 Summary: Transform casual text into a leetspeak version.
-Home-page: UNKNOWN
+Home-page: https://github.com/Huertas97/LeetTransformer
 Author: Álvaro Huertas García
 Author-email: <alvaro.huertas.garcia@alumnos.upm.es>
 License: UNKNOWN
