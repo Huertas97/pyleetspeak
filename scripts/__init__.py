@@ -1,1 +1,1 @@
-from .pyleetspeak import LeetSpeaker
+from scripts.pyleetspeak import LeetSpeaker

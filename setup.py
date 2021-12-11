@@ -7,7 +7,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
     long_description = "\n" + fh.read()
 
-VERSION = '0.0.1'
+VERSION = '0.0.2'
 DESCRIPTION = 'Transform casual text into a leetspeak version.'
 LONG_DESCRIPTION = 'Transform casual text into a leetspeak version. You can modify the probability of different transformation and the frequency of that transformation. Currently only Basic Leet mode is available: every vowel is substituted for a number.'
 
