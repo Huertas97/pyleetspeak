@@ -1,1 +1,1 @@
-# LeetTransformer :robot::desktop_computer::man_technologist::one::three::three::seven:
+# LeetTransformer :robot::man_technologist::one::three::three::seven:
