@@ -21,7 +21,7 @@ The only required argument that the user has to provide is the `text_in` argumen
 
 Let's see a simple working example:
 
-```
+```python
 from pyleetspeak import LeetSpeaker
 text_in = "I speak leetspeak"
 leeter = LeetSpeaker(text_in, change_prb=0.8,  change_frq=0.6, mode = "basic", seed = None, verbose=False)
@@ -34,7 +34,7 @@ print(leet_result)
 
 For the sake of reproducibility you can set a random seed:
 
-```
+```python
 from pyleetspeak import LeetSpeaker
 leeter = LeetSpeaker(text_in, change_prb=0.8,  change_frq=0.5, mode = "basic", seed = 42, verbose=False)
 leet_result = leeter.text2leet()
