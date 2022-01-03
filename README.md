@@ -4,6 +4,10 @@ Under development! Only Basic Leet is available which consists of substituting e
 
 - [Installation](#installation)
 - [Examples of How to Use](#exmaples-of-how-to-use)
+
+https://user-images.githubusercontent.com/56938752/147925880-5ef14a81-a91a-47e8-9e51-3adfce7841be.mp4
+
+
 ## Installation
 
 ```
@@ -29,6 +33,9 @@ leet_result = leeter.text2leet()
 print(leet_result)
 # "1 spe4k l33tsp34k"
 ```
+
+
+
 
 
 
