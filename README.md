@@ -4,9 +4,12 @@ Under development! Only Basic Leet is available which consists of substituting e
 
 - [Installation](#installation)
 - [Examples of How to Use](#exmaples-of-how-to-use)
+
+
     - [Basic Use](#basic-use)
     - [Get all changes](#get-all-changes)
     - [Define your own changes](#define-your-own-changes)
+
 
 ## Installation
 
@@ -35,6 +38,9 @@ leet_result = leeter.text2leet()
 print(leet_result)
 # "1 spe4k l33tsp34k"
 ````
+
+
+
 
 
 For the sake of reproducibility you can set a random seed:
