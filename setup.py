@@ -4,12 +4,14 @@ import os
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
-    long_description = "\n" + fh.read()
+# with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
+#     long_description = "\n" + fh.read()
+with open("README.md", mode="r", encoding="utf-8") as readme_file:
+    readme = readme_file.read()    
 
-VERSION = '0.0.4'
+VERSION = '0.0.11'
 DESCRIPTION = 'Transform casual text into a leetspeak version.'
-LONG_DESCRIPTION = 'Transform casual text into a leetspeak version. You can modify the probability of different transformation and the frequency of that transformation. Currently only Basic Leet mode is available: every vowel is substituted for a number.'
+LONG_DESCRIPTION = 'Transform casual text into a leetspeak version. You can modify the probability of different transformation and the frequency of that transformation. Currently only Basic Leet mode is available: every vowel is substituted for a number or introduce your own substitutions'
 
 # Setting up
 #  python setup.py sdist bdist_wheel
@@ -21,8 +23,8 @@ setup(
     author_email="<alvaro.huertas.garcia@alumnos.upm.es>",
     url='https://github.com/Huertas97/LeetTransformer',
     description=DESCRIPTION,
+    long_description= readme,  #long_description,    
     long_description_content_type="text/markdown",
-    long_description=long_description,
     packages=find_packages(),
     install_requires=['Unidecode'],
     keywords=['leetspeak'],

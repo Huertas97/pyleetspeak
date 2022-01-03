@@ -3,6 +3,7 @@ README.md
 setup.py
 pyleetspeak/LeetSpeaker.py
 pyleetspeak/__init__.py
+pyleetspeak/modes.py
 pyleetspeak.egg-info/PKG-INFO
 pyleetspeak.egg-info/SOURCES.txt
 pyleetspeak.egg-info/dependency_links.txt
