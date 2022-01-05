@@ -3,11 +3,8 @@ import random
 import re
 import math
 import unidecode
-from itertools import product
+from itertools import permutations, product
 import logging
-from modes import basic_mode
-import copy
-from collections import defaultdict
 
 logger = logging.getLogger(__name__)
 handler = logging.StreamHandler()
@@ -17,41 +14,39 @@ formatter = logging.Formatter(
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+basic_mode = [("a", ["4", "@"]), ("e", "3"), ("i", "1"), ("o", "0"), ("u", "_")]
+
 
 class LeetSpeaker(object):
-    """
+    """[summary]
+
     Parameters:
         text_in ([type]):
           [description]
         text_out ([type]):
           Output text already formatted to leetspeak
-        change_prb (int):
-          Probability of applying each substitution type
-        change_frq (int):
-          determines how frequently substitution is applied
-        mode (str):
-          Determines  which kind of substitutios should be applied
-        seed (int):
-          Seed for reproducible results
-        verbose (bool):
-          Select code verbosity
-        get_all_combs (bool):
-          Get all possible leetspeak variations of the introduced text
-        user_changes (Union[List, Dict]):
-            Dict or List of tuples with additional changes introduced by the user. 
+        text_in ([type]):
+          [description]
+        text_in ([type]):
+          [description]
+        text_in ([type]):
+          [description]
+        text_in ([type]):
+          [description]
 
+    Methods:
+        make_change
     """
 
     def __init__(
         self,
         text_in: str,
-        change_prb: float = 0.8,
-        change_frq: float = 0.5,
-        mode: str = "basic",
+        change_prb: float = 0.8,  # Probabilidad de que se de un cambio
+        change_frq: float = 0.5,  # Frecuencia del cambio en el texto
+        mode: str = "basic",  # which kind of substitution should be applied
         seed: int = None,
         verbose: bool = False,
         get_all_combs: bool = False,  # Do all combinations or not
-        user_changes: list = None,
     ):
         self.text_in = unidecode.unidecode(text_in)
         self.text_out = unidecode.unidecode(text_in)
@@ -60,20 +55,8 @@ class LeetSpeaker(object):
         self.mode = mode
         self.get_all_combs = get_all_combs
         self.init_len = len(text_in)
-
-        # Select predefined changes
         if self.mode == "basic":
-            self.list_changes = copy.deepcopy(basic_mode)
-
-        # No pre-defined changes will be used
-        elif self.mode == None:
-            self.list_changes = []
-
-        # Changes introduced by the user will be added to the predefined changes
-        if user_changes:
-            assert isinstance(user_changes, dict) or isinstance(user_changes, list)
-            self.user_changes = user_changes
-            self.list_changes = self.add_user_changes()
+            self.list_changes = basic_mode
 
         if verbose == True:
             logger.setLevel(logging.INFO)
@@ -83,32 +66,7 @@ class LeetSpeaker(object):
         # None for full random process, set seed for reproducibility in test
         random.seed(seed) if seed else random.seed()
 
-    def add_user_changes(self):
-        """Method for combining pre-defined and user-defined substitution types
-
-        Returns:
-            List[Tuple]: List of tuples where each tuple is a substitution type. The first tuple
-                        element is the target character and the second element is a list of possible substitution characters
-        """
-        # transform predefined changes into a dictionary
-        chg_dict = dict(self.list_changes)
-
-        # If changes introduced by user is not a dict transform it
-        if not isinstance(self.user_changes, dict):
-            self.user_changes = dict(self.user_changes)
-
-        # Create a Defaultdict with type list for combining both dictionaries
-        dd = defaultdict(list)
-        for d in (chg_dict, self.user_changes):
-            for key, value in d.items():
-                dd[key].extend(value)
-
-        # backtransform it to a list of tuples
-        return [(k, v) for k, v in dd.items()]
-
-    def make_change_of_type(
-        self, text: str, t1: str, t2: Union[str, List[str]], change_idxs: List[int]
-    ):
+    def make_change_of_type(self, text: str, t1: str, t2: Union[str, List[str]], change_idxs: List[int]):
         """Method used to randomly apply a change of an target term t1 to a new term t2 in different positions. In case t2 is a set of possible changes, one is selected randomly
 
         This method receives the indices of the output text where the substitution of t1 for t2 must occur.
@@ -116,7 +74,6 @@ class LeetSpeaker(object):
         The changes are dynamically applied to the output text (self.text_out)
 
         Args:
-            text (str): Text where the substitutions will take place.
             t1 (str): Target term in the original text introduced.
             t2 (Union[str, List[str]]): New term that replaces target term. It is a leetspeak term. In case of set of terms, one is randomly selected
             change_idex (List[int]): List of indexes of output text where the change of t1 for t2 should be applied
@@ -126,19 +83,25 @@ class LeetSpeaker(object):
         """
 
         # apply the change in each idx selected
+        # for i, (idx_start, idx_end) in enumerate(change_idxs):
+        #     # take into account the shift made in idxs after each substitution
+        #     shift_len = self.init_len - len(self.text_out)
+        #     logger.info(f"Do change {i+1}: {t1} --> {t2_selected}")
+        #     self.text_out = (
+        #         self.text_out[0 : idx_start - shift_len]
+        #         + t2_selected
+        #         + self.text_out[idx_end - shift_len :]
+        #     )
+
+        # apply the change in each idx selected
         init_len = len(text)
         for i, (idx_start, idx_end) in enumerate(change_idxs):
             # take into account the shift made in idxs after each substitution
             shift_len = init_len - len(text)
-            if isinstance(t2, list):
-                # select randomly a possible change
-                t2_selected = random.choice(t2)
-            else:
-                t2_selected = t2
-            logger.info(f"Do change {i+1}: {t1} --> {t2_selected}")
+            logger.info(f"Do change {i+1}: {t1} --> {t2}")
             text = (
                 text[0 : idx_start - shift_len]
-                + t2_selected
+                + t2
                 + text[idx_end - shift_len :]
             )
 
@@ -189,97 +152,94 @@ class LeetSpeaker(object):
                 Random indexes:{rand_idxs}"""
             )
 
-            self.text_out = self.make_change_of_type(self.text_out, t1, t2, rand_idxs)
+            if isinstance(t2, list):
+                # select randomly a possible change
+                t2_selected = random.choice(t2)
+            else:
+                t2_selected = t2
+              
+            self.text_out = self.make_change_of_type(self.text_out, t1, t2_selected, rand_idxs)
             return self.text_out
 
         else:
             return self.text_out
 
-    def find_all_matches(self, text, t1, t2):
-        """Extract all the possition suscteptible to be changed. Return a tuple with the original chr and substitution chr
+    def find_all_matches(self, text,  t1, t2):
+        """Esta función recibe el texto y busca todos los matches de un elemento t1 en
+        la secuencia original. Devuelve todas las posiciones donde ha hecho match y
+        los símbolos que pueden ir en esa posición (juntanto el término original t1 con
+        todos los posibles cambios t2). t2 puede ser una cadena o una lista DEVUELVE DE UN SOLO TÉRMINO
 
         Args:
-            text (str): Text where the substitutions will take place.
-            t1 (str): Target term in the original text introduced.
-            t2 (Union[str, List[str]]): New term that replaces target term. It is a leetspeak term. In case of set of terms, one is randomly selected
+            t1 ([type]): [description]
+            t2 ([type]): [description]
 
         Returns:
-            matches_idxs (List[Tuple]): List of tuples where each tuple are the indexes to be changed
-            matches_symbols (List[List[Tuple]]): Possible character in a certain index (is equally sorted as maches_idxa).
-                                                 Each tuple contains the original character and the substituion character.
-                                                 Each sublist will contain a tuple for each substitution characters that
-                                                 can be applied.
+            [type]: [description]
         """
 
         pattern = rf"(?=({t1}))"  # capturing group inside a lookahead matching overlapping patterns
         matches_idxs = []
         matches_symbols = []
+        # for m in re.finditer(pattern, self.text_in, re.IGNORECASE):
+        #     matches_idxs.append((m.start(1), m.end(1)))
+        #     matches_symbols.append((self.text_in[m.start(1) : m.end(1)], t2))
 
-        # The behaviour is different if there are only one or several possible substitutions.
-        # E.g. Input: leetspeaak;  Type sub: ("a", ["4", "@"]) --> Idx [(7, 8), (8, 9)] ; Symbols [[('a', '4'), ('a', '@')], [('a', '4'), ('a', '@')]]
         if isinstance(t2, list):
-            for m in re.finditer(pattern, text, re.IGNORECASE):
-                matches_idxs.append((m.start(1), m.end(1)))
-                t2_comb = [(text[m.start(1) : m.end(1)], t2_sub) for t2_sub in t2]
-                matches_symbols.append(t2_comb)
-        # E.g. Input: leetspeaak;  Type sub: ("e", "3") --> Idx [(1, 2), (2, 3), (6, 7)] ; Symbols [[('e', '3')], [('e', '3')], [('e', '3')]]
+          for m in re.finditer(pattern, text, re.IGNORECASE):
+            matches_idxs.append( (m.start(1), m.end(1)) )
+            t2_comb = [ (text[m.start(1):m.end(1)], t2_sub)  for t2_sub in t2   ]
+            matches_symbols.append( t2_comb )
         else:
-            for m in re.finditer(pattern, text, re.IGNORECASE):
-                matches_idxs.append((m.start(1), m.end(1)))
-                matches_symbols.append([(text[m.start(1) : m.end(1)], t2)])
+          for m in re.finditer(pattern, text, re.IGNORECASE):
+            matches_idxs.append( (m.start(1), m.end(1)) )
+            matches_symbols.append( [(text[m.start(1):m.end(1)], t2)] )
 
         return matches_idxs, matches_symbols
 
     def make_all_changes(self, text, matches_idxs, matches_symbols):
-        """Method in charge of get all possible combinations of substitutions from a text
-
-        This method takes the initial text, the indexes susceptible of being changed, and the
-        characters for each position (`matches_symbols`). To obtain the final output, it applies two
-        combination processes.
-        Firstly, it gets all the combination of tuples between different sublist of `matches_symbols`.
-        Secondly, it combines these combinations to obtain all the possible character in each position,
-        combining original and substitution characters. Finally, Loop through each idx and each change
-        in character combinations and apply the change
+        """Esta función toma el texto inicial, las posiciones del texto inicial que hay que cambiar,
+        y todos los símbolos posibles por cada posición. Realiza una combinación de todos los posibles
+        cambios en una palabra teniendo en cuenta los posibles cambios por cada posición.
+        Una vez obtenidas todas las combinaciones de cambios para el texto de entrada, realiza cada combinación
+        en un bucle. En cada bucle se van haciendo los cambios pertinentes en el orde de aparición y se tiene en cuenta
+        si se modifica la longitud del texto inicial si se hace un cambio en la posición previa.
 
         Args:
-            text (str): Text where the substitutions will take place.
-            matches_idxs (List[Tuple]): List of tuples where each tuple are the indexes to be changed
-            matches_symbols (List[List[Tuple]]): Possible character in a certain index (is equally sorted as maches_idxa).
-                                                 Each tuple contains the original character and the substituion character.
-                                                 Each sublist will contain a tuple for each substitution characters that
-                                                 can be applied.
+            matches_idxs ([type]): [description]
+            matches_symbols ([type]): [description]
 
         Returns:
-            List[str]: List with all the leetspeak variation of a introduced text
+            [type]: [description]
         """
 
         init_len = len(text)
+        # Make all posible combinations of changes for all position.
         all_leet_text = []
+        # for comb in product(*matches_symbols):
+        #     # REcorrer cada posición y hacerle el cambio
 
-        # Only symbols are combined, because idxs remain the same
-        # Make all posible combinations of substitution characters (second element of tuple)
-        # E.g. Input: leetspeaak;  Type sub: [ ("a", ["4", "@"]), ("e", "3") ]
-        # Idx [(1, 2), (2, 3), (6, 7), (7, 8), (8, 9)]
-        # First Chr Comb: (('e', '3'), ('e', '3'), ('e', '3'), ('a', '4'), ('a', '4'))
-        # Second Chr Comb: (('e', '3'), ('e', '3'), ('e', '3'), ('a', '4'), ('a', '@')) ...
-        chr_combs = list(product(*matches_symbols))
+        #     leet_text = self.text_in
+        #     assert len(matches_idxs) == len(matches_symbols)
+        #     # apply the change in each idx selected
+        #     for (idx_start, idx_end), t2_selected in zip(matches_idxs, comb):
+        #         # take into account the shift made in idxs after each substitution
+        #         shift_len = self.init_len - len(leet_text)
+        #         leet_text = (
+        #             leet_text[0 : idx_start - shift_len]
+        #             + t2_selected
+        #             + leet_text[idx_end - shift_len :]
+        #         )
+        #     all_leet_text.append(leet_text)
 
-        for comb in chr_combs:
-            # Get all combinations between tuples
-            # E.g. Input: leetspeaak;  Type sub: [ ("a", ["4", "@"]), ("e", "3") ]
-            # Idx [(1, 2), (2, 3), (6, 7), (7, 8), (8, 9)]
-            # First Comb: (('e', '3'), ('e', '3'), ('e', '3'), ('a', '4'), ('a', '4'))
-            # First Element Product Comb: ('e', 'e', 'e', 'a', 'a')
-            # Second Element Product Comb: ('e', 'e', 'e', 'a', '4') ...
-            for chr_comb_comb in product(*comb):
+        combs = list(product(*matches_symbols)) # [(('A', '4'), ('o', '0'), ('a', '4')), (('A', '4'), ('o', '0'), ('a', '@'))]
+        for comb in combs:
+            for comb in product(*comb):
+                # REcorrer cada posición y hacerle el cambio
                 leet_text = text
                 assert len(matches_idxs) == len(matches_symbols)
-
-                # Loop through each idx and each change in character combinations and apply the change
-                # Both lists should be equally sorted
-                for (idx_start, idx_end), t2_selected in zip(
-                    matches_idxs, chr_comb_comb
-                ):
+                # apply the change in each idx selected
+                for (idx_start, idx_end), t2_selected in zip(matches_idxs, comb):
                     # take into account the shift made in idxs after each substitution
                     shift_len = init_len - len(leet_text)
                     leet_text = (
@@ -288,6 +248,7 @@ class LeetSpeaker(object):
                         + leet_text[idx_end - shift_len :]
                     )
                 all_leet_text.append(leet_text)
+
 
         return all_leet_text
 
@@ -298,30 +259,21 @@ class LeetSpeaker(object):
             [type]: [description]
         """
 
-        # Get all possible leetspeak versions
         if self.get_all_combs:  # tenemos que hacer todos los cambios posibles
             matches_idxs = []
             matches_symbols = []
             text = self.text_out
-
-            # Extract all the possition suscteptible to be changed. Tuple the original chr and substitution chr
-            # E.g. Input: leetspeaak;  Type sub: [ ("a", ["4", "@"]), ("e", "3") ]
-            # Idx [(7, 8), (8, 9), (1, 2), (2, 3), (6, 7)]
-            # Symbols [[('a', '4'), ('a', '@')], [('a', '4'), ('a', '@')], [('e', '3')], [('e', '3')], [('e', '3')]]
             for t1, t2 in self.list_changes:
                 # get idxs and matched symbols
                 idxs, symbols = self.find_all_matches(text, t1, t2)
-                matches_idxs.extend(idxs) if idxs else None
-                matches_symbols.extend(symbols) if symbols else None
+                matches_idxs.append(idxs) if idxs else None
+                matches_symbols.append(symbols) if symbols else None
 
-            # If append instead of extend: Flat list with all the changes idx and symbols
-            # matches_idxs = [item for sublist in matches_idxs for item in sublist]
-            # matches_symbols = [item for sublist in matches_symbols for item in sublist]
+            # Flat list with all the changes idx and symbols
+            matches_idxs = [item for sublist in matches_idxs for item in sublist]
+            matches_symbols = [item for sublist in matches_symbols for item in sublist]
 
             # Sort both list according to idxs positions
-            # E.g. Input: leetspeaak;  Type sub: [ ("a", ["4", "@"]), ("e", "3") ]
-            # Idx [(1, 2), (2, 3), (6, 7), (7, 8), (8, 9)]
-            # Symbols [[('e', '3')], [('e', '3')], [('e', '3')], [('a', '4'), ('a', '@')], [('a', '4'), ('a', '@')]]
             matches_idxs, matches_symbols = map(
                 list,
                 zip(
@@ -335,18 +287,18 @@ class LeetSpeaker(object):
             all_leet_text = self.make_all_changes(text, matches_idxs, matches_symbols)
             return all_leet_text
 
-        # Obtain a random change
+        # vamos 1 a 1 para aplicar el randomness a cada posible cambio
         else:
             for t1, t2 in self.list_changes:
                 self.text_out = self.random_change(t1, t2)
-            self.text_out = self.text_out
             return self.text_out
 
 
 # TODO
-# [x] Controlar lower o upper case
-# [ ] Añadir nuevos cambios
-# [x] Organizar cambios por nivel
-# [x] Poder añadir manualmente cambios
-# [x] change frq puede ser aleatoria
-# [x] mejorar como se coge la lista de cambios --> Se coge desde un import y con deepcopy para no modificarlo
+## Controlar lower o upper case
+## Añadir nuevos cambios
+## Organizar cambios por nivel
+# Poder añadir manualmente cambios
+# change frq puede ser aleatoria
+# mejorar como se coge la lista de cambios
+# organizar mejor el texto introducido.

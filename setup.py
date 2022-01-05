@@ -9,9 +9,9 @@ here = os.path.abspath(os.path.dirname(__file__))
 with open("README.md", mode="r", encoding="utf-8") as readme_file:
     readme = readme_file.read()    
 
-VERSION = '0.0.11'
-DESCRIPTION = 'Transform casual text into a leetspeak version.'
-LONG_DESCRIPTION = 'Transform casual text into a leetspeak version. You can modify the probability of different transformation and the frequency of that transformation. Currently only Basic Leet mode is available: every vowel is substituted for a number or introduce your own substitutions'
+VERSION = '0.1.0'
+DESCRIPTION = 'Transform casual text into a leetspeak and word camouflage version.'
+LONG_DESCRIPTION = 'Transform casual text into a leetspeak version. You can modify the probability of different transformation, the frequency of that transformation, the type of substitutions applied among other parameters (see examples of use below).'
 
 # Setting up
 #  python setup.py sdist bdist_wheel

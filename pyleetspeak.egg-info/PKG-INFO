@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: pyleetspeak
-Version: 0.0.11
+Version: 0.0.15
 Summary: Transform casual text into a leetspeak version.
 Home-page: https://github.com/Huertas97/LeetTransformer
 Author: Álvaro Huertas García
@@ -21,9 +21,19 @@ Under development! Only Basic Leet is available which consists of substituting e
 
 - [Installation](#installation)
 - [Examples of How to Use](#exmaples-of-how-to-use)
+
+
     - [Basic Use](#basic-use)
     - [Get all changes](#get-all-changes)
     - [Define your own changes](#define-your-own-changes)
+
+
+
+
+
+https://user-images.githubusercontent.com/56938752/147962824-c347e184-14b6-41fe-8b05-ef670ac0a5f9.mp4
+
+
 
 ## Installation
 
@@ -54,6 +64,9 @@ print(leet_result)
 ````
 
 
+
+
+
 For the sake of reproducibility you can set a random seed:
 
 ````python
@@ -79,7 +92,7 @@ assert len(leet_result) == 32 # all possible combinations
 print(leet_result)
 ````
 
-### Define your own changes
+<!-- ### Define your own changes
 
 `pyleetspeak` is prepared to apply substitutions defined by the user. It is essential to highlight that these new user-defined changes have to follow two possible formats, dictionary or List of tuples. Here we show a toy example to add two new target characters from the original text to be replaced by two different characters and one, respectively:
 
@@ -123,7 +136,7 @@ obj = LeetSpeaker(
 )
 print(obj.text2leet())
 # Only u$er ch#nge$: Leet$pe#k
-````
+```` -->
 
 
 
