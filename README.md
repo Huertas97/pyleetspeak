@@ -1,39 +1,22 @@
 # LeetTransformer :one::three::three::seven::robot:
 
 
-- [LeetTransformer :one::three::three::seven::robot:](#leettransformer-onethreethreesevenrobot)
+
   - [Overview](#overview)
   - [Installation](#installation)
   - [LeetSpeaker: canonical leetspeak](#leetspeaker-canonical-leetspeak)
     - [Parameters](#parameters)
     - [Modes](#modes)
     - [Basic Use](#basic-use)
-- ["1 sp34k leetsp3ak"](#1-sp34k-leetsp3ak)
-    - [Define your own changes](#define-your-own-changes)
-- [N3w ch@ng3$ L33t$pe4k](#n3w-chng3-l33tpe4k)
-- [Only u$er ch#nge$: Leet$pe#k](#only-uer-chnge-leetpek)
     - [Uniform substitutions](#uniform-substitutions)
-- [L€€tsp€4k](#ltsp4k)
     - [Get all changes](#get-all-changes)
-- [162](#162)
-- ['le3t$p34k'](#le3tp34k)
-- [90](#90)
-- ['le3t$peak'](#le3tpeak)
   - [PuntctuationCamouflage: word camouflge using punctuation injections](#puntctuationcamouflage-word-camouflge-using-punctuation-injections)
     - [Parameters](#parameters-1)
     - [Basic Use](#basic-use-1)
-- ['v_ac=una'](#v_acuna)
-- ['|v.a;c}u^n&a'](#vacuna)
     - [Uniform punctuation injections](#uniform-punctuation-injections)
-- ['.v.a.c.u.n.a'](#vacuna-1)
-- ['vac#u#na'](#vacuna-2)
     - [User-defined character injections](#user-defined-character-injections)
-- ['vac~u~na'](#vacuna-3)
     - [Hyphenitation](#hyphenitation)
-- ['va|cu|na'](#vacuna-4)
-- [pyWordCamouflage.py:546: RuntimeWarning: You have selected `hyphenate` = True with a number of punctuation marks to insert (2) greater than the maximum number of positions to hyphenate (1). Therefore, the number of punctuation to be inserted is reduced to the maximum number of positions to hyphenate.](#pywordcamouflagepy546-runtimewarning-you-have-selected-hyphenate--true-with-a-number-of-punctuation-marks-to-insert-2-greater-than-the-maximum-number-of-positions-to-hyphenate-1-therefore-the-number-of-punctuation-to-be-inserted-is-reduced-to-the-maximum-number-of-positions-to-hyphenate)
-- ['va|cuna'](#vacuna-5)
-- ['va|cuna'](#vacuna-6)
+
 
 
 ## Overview
