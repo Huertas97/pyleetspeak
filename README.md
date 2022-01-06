@@ -1,21 +1,24 @@
 # LeetTransformer :one::three::three::seven::robot:
 
 
-
   - [Overview](#overview)
   - [Installation](#installation)
   - [LeetSpeaker: canonical leetspeak](#leetspeaker-canonical-leetspeak)
     - [Parameters](#parameters)
     - [Modes](#modes)
     - [Basic Use](#basic-use)
+    - [Define your own changes](#define-your-own-changes)
     - [Uniform substitutions](#uniform-substitutions)
     - [Get all changes](#get-all-changes)
-  - [PuntctuationCamouflage: word camouflge using punctuation injections](#puntctuationcamouflage-word-camouflge-using-punctuation-injections)
+  - [PuntctuationCamouflage](#puntctuationcamouflage)
     - [Parameters](#parameters-1)
     - [Basic Use](#basic-use-1)
     - [Uniform punctuation injections](#uniform-punctuation-injections)
     - [User-defined character injections](#user-defined-character-injections)
     - [Hyphenitation](#hyphenitation)
+  - [InversionCamouflage](#inversioncamouflage)
+    - [Parameters](#parameters-2)
+    - [Basic Use](#basic-use-2)
 
 
 
@@ -27,6 +30,7 @@
 
 - `LeetSpeaker`: This module apply the canonical 'leetspeak' method of producing visually similar character strings by replacing alphabet characters with special symbols or numbers. There's many different ways you can use leet speak. Ranging from basic vowel substitutions to really advanced combinations of various punctuation marks and glyphs. Different leetspeak levels are included.
 - `PuntctuationCamouflage`: This module apply punctuation symbol injections in the text. It is another version of producing visually similar character strings. The location of the punctuation injections and the symbols used can be selected by the user. 
+- `InversionCamouflage`: This module create new camouflaged version of words by inverting the order of the syllables. It works by separating a input text in syllabels, select two syllabels and invert them.
 
 Both modules can be combined in a pipeline.
 
@@ -219,7 +223,9 @@ leet_result[60]
 # 'le3t$peak'
 ````
 
-## PuntctuationCamouflage: word camouflge using punctuation injections
+## PuntctuationCamouflage
+
+Word camouflge using punctuation injections
 
 ### Parameters
 
@@ -267,7 +273,7 @@ wrd_camo.text2punctcamo("vacuna")
 The same process but now using the same punctuation symbol using `uniform_change`.
 
 ````python
-from pyWordCamouflage import PuntctuationCamouflage
+from pyleetspeak import PuntctuationCamouflage
 
 wrd_camo = PuntctuationCamouflage(
     word_splitting=True,
@@ -297,7 +303,7 @@ wrd_camo.text2punctcamo("vacuna", n_inj=2)
 By default the punctuation symbols used are the one from `string.punctuation` built-in Python module. You can establish which punctuation symbols should be used.
 
 ````python
-from pyWordCamouflage import PuntctuationCamouflage
+from pyleetspeak import PuntctuationCamouflage
 
 wrd_camo = PuntctuationCamouflage(
     word_splitting=False,
@@ -315,7 +321,7 @@ wrd_camo.text2punctcamo("vacuna", n_inj=2)
 Usually the punctuation symbol injections occur between syllables. `PunctuationCamouflage` can lead with this situation using hyphenation dictionaries from `pyphen` PyPi Package. Hypenation dictionaries have language dependent rules for setting boundaries for hyphen. Thus, `lang` should be passed for a right syllabels detection. Currently, 69 languages are supported. To enable this kind of punctuation injection set `hyphenate` to `True`.
 
 ````python
-from pyWordCamouflage import PuntctuationCamouflage
+from pyleetspeak import PuntctuationCamouflage
 
 wrd_camo = PuntctuationCamouflage(
     word_splitting=False,
@@ -333,7 +339,7 @@ wrd_camo.text2punctcamo("vacuna", n_inj=2)
 Notice the importance of `lang` for the syllabels detection. Instead of Spanish we will use Englisg hyphenate dictionaries. English will only detect one syllables boundary ("va-cuna") instead of two ("va-cu-na"). Notice also that a `RunTimeWarning` has been raised informing that we hace specified more punctuation injections (`n_inj`=2) than syllables boundaries available.
 
 ````python
-from pyWordCamouflage import PuntctuationCamouflage
+from pyleetspeak import PuntctuationCamouflage
 
 wrd_camo = PuntctuationCamouflage(
     word_splitting=False,
@@ -366,4 +372,32 @@ wrd_camo = PuntctuationCamouflage(
 
 wrd_camo.text2punctcamo("vacuna", n_inj=1)
 # 'va|cuna'
+````
+
+## InversionCamouflage
+
+Word camouflge inverting syllables order.
+
+### Parameters
+
+The inversion output can be controlled using the ``max_dist`` and ``only_max_dist_inv`` parameters.
+If several inversions can be applied with the same parameter, a random one is selected and applied.
+
+- ``max_dist`` (int): Maximum distance between syllabels for inversion. 
+                Example: If max_dist = 1 in "va-cu-na" only inversions va <--> cu ; cu <--> na will occur. 
+                If max_dist = 2 in "va-cu-na"  inversions va <--> cu ; cu <--> na ; va <--> na will occur
+
+- ``only_max_dist_inv`` (bool): Indicates whether you want to obtain only the inversion of max_dist or choose among
+                    all inversions with the smallest possible distances up to max_dist. 
+                    If True only max_dist inversion is considered for randomly selection of inversion.
+
+### Basic Use
+
+````python
+from pyleetspeak import InversionCamouflage
+
+text = "vacuna"
+inverter = InversionCamouflage(seed=21)
+inverter.text2inversion(text, lang="es", max_dist=1, only_max_dist_inv=True)
+# 'cuvana'
 ````
