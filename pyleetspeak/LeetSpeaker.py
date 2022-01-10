@@ -8,7 +8,7 @@ import math
 import unidecode
 from itertools import product
 import logging
-from modes import (
+from .modes import (
     basic_mode,
     intermediate,
     advanced,
@@ -70,6 +70,7 @@ class LeetSpeaker(object):
         self.mode = mode
         self.get_all_combs = get_all_combs
         self.uniform_change = uniform_change
+        self.seed = seed
 
         # Select predefined changes
         if self.mode not in [
@@ -484,6 +485,7 @@ class PuntctuationCamouflage(object):
             punctuation (List[str], optional): List of puntuation symbols to use for the camouflage injection. Defaults to string.punctuation+" ".
             lang (str, optional): Language to be used in the `hyphenate` process. Defaults to "es".
         """
+        self.seed = seed
         # None for full random process, set seed for reproducibility in test
         random.seed(seed) if seed else random.seed()
 
@@ -525,7 +527,8 @@ class PuntctuationCamouflage(object):
             text (str): Input text to be punctuation camouflage
             n_inj (int): Number of punctuation injections desired. Ignored if `word_splitting` is selected. If greater than maximum injection is restricted to the maximum. Default = 2.
         Returns:
-            [str]: Punctuation camouflaged text
+            punct_idxs (List[int]): List of indexes where the punctuation injection wil occur
+            punct_symbs (List[str]): List of punct symbols to be injected in each index
         """
         if self.hyphenate:
             if self.lang not in pyphen.LANGUAGES.keys():
@@ -537,6 +540,9 @@ class PuntctuationCamouflage(object):
                 )
             dict_hyphen = pyphen.Pyphen(lang=self.lang)
             hyphen_idx = dict_hyphen.positions(text)
+
+            if not hyphen_idx: # empty list, no syllabels detected
+              return None, None # return empty results
 
             # if word_spliting select all the possitions to be injected
             if self.word_splitting:
@@ -594,9 +600,15 @@ class PuntctuationCamouflage(object):
             [str]: Punctuation camouflaged text
         """
         punct_idxs, punct_symbs = self.get_punct_injections(text, n_inj)
-        camo_text = self.make_punct_injection(text, punct_idxs, punct_symbs)
 
-        return camo_text
+        # None if hyphen is not possible. 
+        if punct_idxs and punct_symbs:
+          camo_text = self.make_punct_injection(text, punct_idxs, punct_symbs)
+          return camo_text
+        
+        # Return input text in that case
+        else:
+          return text
 
 
 class InversionCamouflage(object):
@@ -614,6 +626,7 @@ class InversionCamouflage(object):
         Args:
             seed (int, optional): Seed for reproducible results. Defaults to None.
         """
+        self.seed = seed
         # None for full random process, set seed for reproducibility in test
         random.seed(seed) if seed else random.seed()
     
@@ -645,6 +658,10 @@ class InversionCamouflage(object):
         dict_hyphen = pyphen.Pyphen(lang=lang)
         hyphen_text = dict_hyphen.inserted(text)
         syllabels = hyphen_text.split("-")
+
+        if len(syllabels) < 2:
+          # Not enough syllabels to invert
+          return text
 
         # Check maximum distance between syllabels to be inverted make sense
         if max_dist > len(syllabels)-1:
