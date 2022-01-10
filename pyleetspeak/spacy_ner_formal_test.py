@@ -1,3 +1,9 @@
+###############################################################
+# Code inspired by the gratest:
+#     - PYDH Youtbe Channel: https://www.youtube.com/watch?v=k1FtpADlusE
+#     - Dulaj Rajitha: https://dulaj.medium.com/confusion-matrix-visualization-for-spacy-ner-9e9d99120ee9
+###############################################################
+
 from spacy.training import offsets_to_biluo_tags
 from matplotlib import pyplot
 import numpy
