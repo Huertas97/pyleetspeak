@@ -8,6 +8,7 @@ from spacy.training import offsets_to_biluo_tags
 from matplotlib import pyplot
 import numpy
 from sklearn.metrics import confusion_matrix
+from tqdm.auto import tqdm
 
 class spacy_formal_test(object):
   def __init__(self, nlp, docs):
@@ -38,7 +39,7 @@ class spacy_formal_test(object):
 
   def create_total_prediction_vector(self):
       prediction_vector = []
-      for doc in self.docs:
+      for doc in tqdm(self.docs, desc="Predictions"):
           prediction_vector.extend(self.create_prediction_vector(doc[0]))
       return prediction_vector
 
@@ -104,3 +105,4 @@ def plot_confusion_matrix(conf_matrix, normalize=False, cmap=pyplot.cm.Blues, ti
                     color="white" if cm[i, j] > thresh else "black")
     fig.tight_layout()
     return cm, ax, pyplot
+
