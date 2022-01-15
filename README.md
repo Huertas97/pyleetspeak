@@ -22,7 +22,8 @@
       - [Basic Use](#basic-use-2)
 
   - [**Leet NER data Generator**](#leet-ner-data-generator)
-
+      - [Usage](#usage)
+      - [NER data formats](#ner-data-formats)
 
 
 ## Overview
@@ -449,6 +450,9 @@ inverter.text2inversion(text, lang="es", max_dist=1, only_max_dist_inv=True)
 
 This method transform an input text into a camouflaged version. The use of word camouflage usually involves camouflaging the most important words of a sentence instead of leetspeaking all the words in the text. Thus, [keyBERT](https://maartengr.github.io/KeyBERT/index.html) is used to extract the most semantically relevant words and apply them different word camouflaging methods presented above. Finally, the camouflaged entities in the output text are annotated in Spacy format.
 
+
+#### **Usage**
+
 - ``kw_model_name`` (str): Transformer model from HuggingFace Hub  used by KeyBERT for selecting the most semantically relevant words in the sentence. These words will be camouflaged.
 
 - ``lang`` (Union[str, List[str]])): Stopwords to remove from the document. You can either pass a customized list of stop words or a ISO 639-1 code language string (e.g. en, es, ru, fr).    
@@ -559,7 +563,7 @@ OrderedDict([('sentence',
               'This is an example of l£;@tspeak Ŧ£><t for NER data generation')])
 ````
 
-#### **NER data format**
+#### **NER data formats**
 
 As already shown, the NER data generated is in Spacy format. Nevertheless, we provide functions to transform it to [BILUO]((https://spacy.io/api/top-level)) and [IOB](https://spacy.io/api/top-level) formats. 
 
