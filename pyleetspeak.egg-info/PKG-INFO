@@ -20,36 +20,43 @@ License-File: LICENSE
 
   - [Overview](#overview)
   - [Installation](#installation)
-  - [LeetSpeaker: canonical leetspeak](#leetspeaker-canonical-leetspeak)
-    - [Parameters](#parameters)
-    - [Modes](#modes)
-    - [Basic Use](#basic-use)
-    - [Define your own changes](#define-your-own-changes)
-    - [Uniform substitutions](#uniform-substitutions)
-    - [Get all changes](#get-all-changes)
-  - [PuntctuationCamouflage](#puntctuationcamouflage)
-    - [Parameters](#parameters-1)
-    - [Basic Use](#basic-use-1)
-    - [Uniform punctuation injections](#uniform-punctuation-injections)
-    - [User-defined character injections](#user-defined-character-injections)
-    - [Hyphenitation](#hyphenitation)
-  - [InversionCamouflage](#inversioncamouflage)
-    - [Parameters](#parameters-2)
-    - [Basic Use](#basic-use-2)
+  - [**Word camouflaging**](#word-camouflaging)
+    - [**LeetSpeaker**](#leetspeaker)
+      - [Parameters](#parameters)
+      - [Modes](#modes)
+      - [Basic Use](#basic-use)
+      - [Define your own changes](#define-your-own-changes)
+      - [Uniform substitutions](#uniform-substitutions)
+      - [Get all changes](#get-all-changes)
+    - [**PuntctuationCamouflage**](#puntctuationcamouflage)
+      - [Parameters](#parameters-1)
+      - [Basic Use](#basic-use-1)
+      - [Uniform punctuation injections](#uniform-punctuation-injections)
+      - [User-defined character injections](#user-defined-character-injections)
+      - [Hyphenitation](#hyphenitation)
+    - [**InversionCamouflage**](#inversioncamouflage)
+      - [Parameters](#parameters-2)
+      - [Basic Use](#basic-use-2)
 
+  - [**Leet NER data Generator**](#leet-ner-data-generator)
+      - [Usage](#usage)
+      - [NER data formats](#ner-data-formats)
 
 
 ## Overview
 
 ---
 
-`pyleetspeak` includes two different, but compatible, text modifications: `LeetSpeaker` and `PuntctuationCamouflage`. 
+Word camouflage is currently used to evade content moderation in Social Media. Therefore, this tool aims to counter new misinformation that emerges in social media platforms by providing a mechanism for simulating and generating leetspeak/word camouflaging data. 
+
+
+`pyleetspeak` includes three different, but compatible, text modifications word camouflaging methods: `LeetSpeaker`, `PuntctuationCamouflage` and `InversionCamouflage`.
 
 - `LeetSpeaker`: This module apply the canonical 'leetspeak' method of producing visually similar character strings by replacing alphabet characters with special symbols or numbers. There's many different ways you can use leet speak. Ranging from basic vowel substitutions to really advanced combinations of various punctuation marks and glyphs. Different leetspeak levels are included.
 - `PuntctuationCamouflage`: This module apply punctuation symbol injections in the text. It is another version of producing visually similar character strings. The location of the punctuation injections and the symbols used can be selected by the user. 
 - `InversionCamouflage`: This module create new camouflaged version of words by inverting the order of the syllables. It works by separating a input text in syllabels, select two syllabels and invert them.
 
-Both modules can be combined in a pipeline.
+These modules can be combined into a string to generate a leetspeak version of an input text. Precisely, this can be achieved by using the `Leet_NER_generator` method that selects the most semantically relevant words from an input text, applies word camouflage and creates compatible annotations for NER detection.
 
 ## Installation
 
@@ -59,11 +66,18 @@ Both modules can be combined in a pipeline.
 pip install pyleetspeak
 ````
 
-## LeetSpeaker: canonical leetspeak
+## **Word camouflaging**
 
 ---
 
-### Parameters
+### **LeetSpeaker**
+
+Canonical [leetspeak](https://en.wikipedia.org/wiki/Leet) in which standard letters are often replaced by numerals or special characters that resemble the letters in appearance
+
+---
+
+#### **Parameters**
+
 
 You can see an example of use in a Heroku App:
 
@@ -81,7 +95,11 @@ The only required argument that the user has to provide is the `text_in` argumen
 
 Minor concerns about the package behaviour: accents are deleted using `Unidecode`. This is important for languages like Spanish, where the word "melocotón" is preprocessed as "melocoton" and finally transformed to leetspeak.
 
-### Modes
+---
+
+
+#### **Modes**
+
 
 There are several modes available:
 
@@ -91,7 +109,9 @@ There are several modes available:
 - `covid_basic`
 - `covid_intermediate`
 
-### Basic Use
+---
+
+#### **Basic Use**
 
 Let's see a simple working example:
 
@@ -122,8 +142,9 @@ leet_result = leeter.text2leet(text_in)
 print(leet_result)
 # "1 sp34k leetsp3ak"
 ````
+---
 
-### Define your own changes
+#### **Define your own changes**
 
 `pyleetspeak` is prepared to apply substitutions defined by the user. It is essential to highlight that these new user-defined changes have to follow two possible formats, dictionary or List of tuples. Here we show a toy example to add two new target characters from the original text to be replaced by two and one different characters, respectively:
 
@@ -176,8 +197,9 @@ letter = LeetSpeaker(
 print(letter.text2leet(text_in))
 # Only u$er ch#nge$: Leet$pe#k
 ````
+---
 
-### Uniform substitutions
+#### **Uniform substitutions**
 
 Usually, the same substitution character is used in all the matches for a specific substitution type. In other words, the same target character is usually replaced by the same substitution character. In order to reproduce this situation, `pyleetspeak` includes the `uniform_change` parameter that determines if all the matches of a target character are jointly or independently substituted. In the following example notice how the target character "e" is always replaced by "€" when `uniform_changes` is se to `True`.
 
@@ -199,7 +221,9 @@ print(leeter.text2leet(text_in))
 # L€€tsp€4k
 ````
 
-### Get all changes
+---
+
+#### **Get all changes**
 
 You can also obtain all the possible versions of a leetspeak text using the `get_all_combs` parameter like this:
 
@@ -240,11 +264,15 @@ leet_result[60]
 # 'le3t$peak'
 ````
 
-## PuntctuationCamouflage
+---
+
+### **PuntctuationCamouflage**
 
 Word camouflge using punctuation injections
 
-### Parameters
+---
+
+#### **Parameters**
 
 - ``seed`` (int, optional): Seed for reproducible results. Defaults to None.
 - ``uniform_change`` (bool, optional): Determines if the same punctuation character should be used in all the position where punctuation is injected . Defaults to False.
@@ -253,7 +281,9 @@ Word camouflge using punctuation injections
 - ``punctuation`` (List[str], optional): List of puntuation symbols to use for the camouflage injection. Defaults to string.punctuation+" ".
 - ``lang`` (str, optional): Language to be used in the `hyphenate` process. Defaults to "es".
 
-### Basic Use
+---
+
+#### **Basic Use**
 
 Another method of producing visually similar character strings is to inject punctuation symbols. `pyleetspeak` includes another functionality named `PunctuationCamouflage` that takles this situation.
 
@@ -285,7 +315,9 @@ wrd_camo.text2punctcamo("vacuna")
 
 ````
 
-### Uniform punctuation injections
+---
+
+#### **Uniform punctuation injections**
 
 The same process but now using the same punctuation symbol using `uniform_change`.
 
@@ -315,7 +347,9 @@ wrd_camo.text2punctcamo("vacuna", n_inj=2)
 # 'vac#u#na'
 ````
 
-### User-defined character injections
+---
+
+#### **User-defined character injections**
 
 By default the punctuation symbols used are the one from `string.punctuation` built-in Python module. You can establish which punctuation symbols should be used.
 
@@ -333,7 +367,9 @@ wrd_camo.text2punctcamo("vacuna", n_inj=2)
 # 'vac~u~na'
 ````
 
-### Hyphenitation
+---
+
+#### **Hyphenitation**
 
 Usually the punctuation symbol injections occur between syllables. `PunctuationCamouflage` can lead with this situation using hyphenation dictionaries from `pyphen` PyPi Package. Hypenation dictionaries have language dependent rules for setting boundaries for hyphen. Thus, `lang` should be passed for a right syllabels detection. Currently, 69 languages are supported. To enable this kind of punctuation injection set `hyphenate` to `True`.
 
@@ -391,11 +427,15 @@ wrd_camo.text2punctcamo("vacuna", n_inj=1)
 # 'va|cuna'
 ````
 
-## InversionCamouflage
+---
+
+### **InversionCamouflage**
 
 Word camouflge inverting syllables order.
 
-### Parameters
+---
+
+#### **Parameters**
 
 The inversion output can be controlled using the ``max_dist`` and ``only_max_dist_inv`` parameters.
 If several inversions can be applied with the same parameter, a random one is selected and applied.
@@ -408,7 +448,9 @@ If several inversions can be applied with the same parameter, a random one is se
                     all inversions with the smallest possible distances up to max_dist. 
                     If True only max_dist inversion is considered for randomly selection of inversion.
 
-### Basic Use
+---
+
+#### **Basic Use**
 
 ````python
 from pyleetspeak import InversionCamouflage
@@ -418,4 +460,155 @@ inverter = InversionCamouflage(seed=21)
 inverter.text2inversion(text, lang="es", max_dist=1, only_max_dist_inv=True)
 # 'cuvana'
 ````
+
+---
+
+## **Leet NER data Generator**
+
+This method transform an input text into a camouflaged version. The use of word camouflage usually involves camouflaging the most important words of a sentence instead of leetspeaking all the words in the text. Thus, [keyBERT](https://maartengr.github.io/KeyBERT/index.html) is used to extract the most semantically relevant words and apply them different word camouflaging methods presented above. Finally, the camouflaged entities in the output text are annotated in Spacy format.
+
+
+#### **Usage**
+
+- ``kw_model_name`` (str): Transformer model from HuggingFace Hub  used by KeyBERT for selecting the most semantically relevant words in the sentence. These words will be camouflaged.
+
+- ``lang`` (Union[str, List[str]])): Stopwords to remove from the document. You can either pass a customized list of stop words or a ISO 639-1 code language string (e.g. en, es, ru, fr).    
+
+- ``max_top_n`` (int): The maximum number of keywords to extract. The final number of keywords extracted will be between 0 and the input number.
+
+- ``important_kws`` (List[str]): List of important keywords to consider during keyword extraction. 
+
+````python
+from pyleetspeak.Leet_NER_generator import NER_data_generator
+
+# Create a generator object. Specifying the language and Hf model
+generator_EN = NER_data_generator(
+    kw_model_name="AIDA-UPM/mstsb-paraphrase-multilingual-mpnet-base-v2",
+    lang="en",
+    max_top_n=5,
+    seed=20,
+)
+
+# Generate NER data
+text = "This is an example of leetspeak text for NER data generation"
+
+NER_data, meta_data = generator_EN.generate_data(
+        sentence=text,
+        important_kws = [r"\bpfizer\b", r"control\b", r"vacuna\b", r"vaccines\b"],
+    )
+````
+
+The ``NER_data`` generated is in Spacy training data format. That means for each sentence we have tuple with the camouflaged sentence and a dictionariy with the starting and ending indexes along the Entity Name:
+
+````python
+[('This is an example of l£;@tspeak Ŧ£><t for NER data generation',
+  {'entities': [(22, 32, 'MIX'), (33, 38, 'LEETSPEAK')]})]
+````
+
+For the sake of transparency, the ``meta_data`` variable contains all the information related to which words from the original text have been selected and which kind of word camouflaging have been applied: 
+
+````python
+OrderedDict([('sentence',
+              'This is an example of leetspeak text for NER data generation'),
+             ('meta',
+              [{'kw': 'leetspeak',
+                'init_idxs': (22, 31),
+                'kw_leet': 'l£;@tspeak',
+                'params': {'leetspeak-covid_basic': {'change_prb': 0.8,
+                  'change_frq': 0.5,
+                  'mode': 'covid_basic',
+                  'get_all_combs': False,
+                  'uniform_change': array(False),
+                  'seed': 20,
+                  'list_changes': [('a', ['@', '4', '∆', '*', '', '.', ' ']),
+                   ('e', ['3', '€', '£', '%', '@', '*', '', '.', ' ']),
+                   ('i', ['1', 'l', '¡', '!', "'", '*', '', '.', ' ']),
+                   ('o', ['0', 'ø', '*', '', '.', ' ']),
+                   ('oo', ['u', ' ']),
+                   ('u', ['_', 'Ü', 'ü', '*', '.', ' '])],
+                  'text_in': 'leetspeak',
+                  'text_out': 'l£@tspeak'},
+                 'punct_camo': {'seed': 20,
+                  'uniform_change': array(True),
+                  'hyphenate': array(False),
+                  'word_splitting': array(False),
+                  'punctuation': '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~ ',
+                  'lang': 'en',
+                  'n_inj': 1,
+                  'text_in': 'l£@tspeak',
+                  'text_out': 'l£;@tspeak'}},
+                'tag': 'MIX',
+                'leet_idxs': (22, 32)},
+               {'kw': 'text',
+                'init_idxs': (32, 36),
+                'kw_leet': 'Ŧ£><t',
+                'params': {'leetspeak': {'change_prb': 0.8,
+                  'change_frq': 0.5,
+                  'mode': array('covid_intermediate', dtype='<U18'),
+                  'get_all_combs': False,
+                  'uniform_change': array(False),
+                  'seed': 20,
+                  'list_changes': [('a', ['@', '4', '∆', '*', '', '.']),
+                   ('e', ['3', '€', '£', '%', '@', '*', '', '.']),
+                   ('i', ['1', 'l', '¡', '!', "'", '*', '', '.']),
+                   ('o', ['0', 'ø', '*', '', '.']),
+                   ('oo', ['u']),
+                   ('u', ['_', 'Ü', 'ü', '*', '.']),
+                   ('b', ['ß', 'vb', 'bv']),
+                   ('c', ['q', 'k', '©']),
+                   ('d', ['t']),
+                   ('f', ['ƒ', 'ph']),
+                   ('h', ['#']),
+                   ('k', ['₭']),
+                   ('l', ['1', 'ʅ']),
+                   ('m', ['ʍ']),
+                   ('n', ['π', '¬']),
+                   ('p', ['₱']),
+                   ('r', ['₹']),
+                   ('s', ['5', '$', 'z']),
+                   ('t', ['7', 'Ŧ']),
+                   ('v', ['b', 'vb', 'bv', '\\/', '▼']),
+                   ('w', ['ω']),
+                   ('x', ['><', 'kks', '×']),
+                   ('y', ['¥']),
+                   ('z', ['ẕ'])],
+                  'text_in': 'text',
+                  'text_out': 'Ŧ£><t'}},
+                'tag': 'LEETSPEAK',
+                'leet_idxs': (33, 38)}]),
+             ('leet_sentence',
+              'This is an example of l£;@tspeak Ŧ£><t for NER data generation')])
+````
+
+#### **NER data formats**
+
+As already shown, the NER data generated is in Spacy format. Nevertheless, we provide functions to transform it to [BILUO]((https://spacy.io/api/top-level)) and [IOB](https://spacy.io/api/top-level) formats. 
+
+````python
+from pyleetspeak import format_converter
+
+sentence_id, words, BILUO_labels, IOB_labels = format_converter.to_bilou_and_iob_format(NER_data, "en")
+
+pd.DataFrame({
+    "sentence_id": sentence_id, 
+    "words": words,
+    "labels": IOB_labels
+})
+````
+
+|    |   sentence_id | words      | labels      |
+|---:|--------------:|:-----------|:------------|
+|  0 |             0 | This       | O           |
+|  1 |             0 | is         | O           |
+|  2 |             0 | an         | O           |
+|  3 |             0 | example    | O           |
+|  4 |             0 | of         | O           |
+|  5 |             0 | l£;@tspeak | B-MIX       |
+|  6 |             0 | Ŧ£><t      | B-LEETSPEAK |
+|  7 |             0 | for        | O           |
+|  8 |             0 | NER        | O           |
+|  9 |             0 | data       | O           |
+| 10 |             0 | generation | O           |
+
+
 
