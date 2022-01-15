@@ -39,7 +39,7 @@ setup(
         "tqdm",
         "Unidecode",
     ],
-    keywords=['leetspeak'],
+    keywords=['leetspeak', "woord camouflage", "content evasion", "information disorders", "social media"],
     classifiers=[
         "Development Status :: 1 - Planning",
         "Intended Audience :: Developers",
