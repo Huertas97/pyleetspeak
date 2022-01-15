@@ -273,7 +273,7 @@ Another method of producing visually similar character strings is to inject punc
 Let's see an example where we create a punctuation injected version of the spanish word `vacuna` (vaccine in English).
 
 ````python
-from pyWordCamouflage import PuntctuationCamouflage
+from pyleetspeak import PuntctuationCamouflage
 
 text_in = "vacuna"
 wrd_camo = PuntctuationCamouflage(seed=21)  # for reproducibility
@@ -286,7 +286,7 @@ You can also specify the behaviour of the punctuation injection.
 Let's get different punctuation symbols between all the letters in the spanish word `vacuna` with `word_splitting` set to `True`.
 
 ````python
-from pyWordCamouflage import PuntctuationCamouflage
+from pyleetspeak import PuntctuationCamouflage
 
 wrd_camo = PuntctuationCamouflage(
     word_splitting=True,
@@ -387,21 +387,20 @@ wrd_camo = PuntctuationCamouflage(
 )
 
 wrd_camo.text2punctcamo("vacuna", n_inj=2)
-# pyWordCamouflage.py:546: RuntimeWarning: You have selected `hyphenate` = True with a number of punctuation marks to insert (2) greater than the maximum number of positions to hyphenate (1). Therefore, the number of punctuation to be inserted is reduced to the maximum number of positions to hyphenate. 
+# RuntimeWarning: You have selected `hyphenate` = True with a number of punctuation marks to insert (2) greater than the maximum number of positions to hyphenate (1). Therefore, the number of punctuation to be inserted is reduced to the maximum number of positions to hyphenate. 
 # 'va|cuna'
 ````
 
 In the same way, if we specify a number of punctuation injections lower than all the syllables boundaries available, the syllables boundaries will be randomly selected.
 
 ````python
-from pyWordCamouflage import PuntctuationCamouflage
+from pyleetspeak import PuntctuationCamouflage
 
 wrd_camo = PuntctuationCamouflage(
     word_splitting=False,
     uniform_change=True,
     hyphenate=True,
     punctuation = ["|"], 
-    ,
     lang="es",
     # seed=40 # for reproducibility
 )
@@ -462,7 +461,13 @@ This method transform an input text into a camouflaged version. The use of word 
 - ``important_kws`` (List[str]): List of important keywords to consider during keyword extraction. 
 
 ````python
+# Probably you will need additional downloads from NLTK
+import nltk
+nltk.download('stopwords')
+nltk.download('punkt')
+
 from pyleetspeak.Leet_NER_generator import NER_data_generator
+
 
 # Create a generator object. Specifying the language and Hf model
 generator_EN = NER_data_generator(

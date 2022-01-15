@@ -9,13 +9,18 @@ here = os.path.abspath(os.path.dirname(__file__))
 with open("README.md", mode="r", encoding="utf-8") as readme_file:
     readme = readme_file.read()    
 
-VERSION = '0.1.0'
+VERSION = '0.1.3'
 DESCRIPTION = 'Transform casual text into a leetspeak and word camouflage version.'
 LONG_DESCRIPTION = 'Transform casual text into a leetspeak version. You can modify the probability of different transformation, the frequency of that transformation, the type of substitutions applied among other parameters (see examples of use below).'
 
 # Setting up
 #  python setup.py sdist bdist_wheel
-# python -m twine upload  dist/*  
+# python -m twine upload  dist/*  --repository testpypi
+# Para probarlo
+# pip install  --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple pyleetspeak
+
+# cuando todo funcione vas a Pypi legacy
+# python -m twine upload  dist/*  --repository pypi
 setup(
     name="pyleetspeak",
     version=VERSION,
@@ -32,7 +37,7 @@ setup(
         "matplotlib",
         "nltk==3.6.7",
         "numpy==1.21.5",
-        "Pyphen==",
+        "Pyphen",
         "scikit_learn==1.0.2",
         "setuptools",
         "spacy==3.2.1",
