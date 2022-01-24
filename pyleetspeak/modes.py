@@ -1,4 +1,4 @@
-###########################################################
+#################################################################################################################################################################################
 # Dictionaries for leetspeak substitutions. The target characters are the dictionary keys 
 # that will be substituted by the characters of the dictionary values. 
 # 
@@ -14,7 +14,7 @@
 #   
 #   - A. Romero-Vicente, “Word camouflage to evade content moderation,” Dec. 2021. [Online]. Available: https://www.disinfo.eu/publications/word-camouflage-to-evade-content-moderation/
 #
-###########################################################
+#################################################################################################################################################################################
 
 
 basic_mode = [("a", ["4", "@"]), ("e", ["3"]), ("i", ["1"]), ("o", ["0"]), ("u", ["_"])]
