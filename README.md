@@ -35,15 +35,9 @@ UML diagrams
 
 ![edited_classes_package-0](https://user-images.githubusercontent.com/56938752/151244448-9fb8b7b8-103f-42f6-8435-cd1f6edfb88b.png)
 
-<<<<<<< Updated upstream
 
 ![packages_Pyleetspeak-0](https://user-images.githubusercontent.com/56938752/151245864-15b97644-9f37-4a48-8454-ae8824021014.png)
 
-=======
-![packages_Pyleetspeak-0](https://user-images.githubusercontent.com/56938752/151245864-15b97644-9f37-4a48-8454-ae8824021014.png)
-
-
->>>>>>> Stashed changes
 ## Installation
 
 ---
