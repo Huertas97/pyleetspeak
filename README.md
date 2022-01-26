@@ -1,4 +1,4 @@
-# LeetTransformer :one::three::three::seven::robot:
+# Pyleetspeak :one::three::three::seven::robot:
 
 
   - [Overview](#overview)
@@ -41,6 +41,12 @@ Word camouflage is currently used to evade content moderation in Social Media. T
 
 These modules can be combined into a string to generate a leetspeak version of an input text. Precisely, this can be achieved by using the `Leet_NER_generator` method that selects the most semantically relevant words from an input text, applies word camouflage and creates compatible annotations for NER detection.
 
+UML diagrams
+
+![edited_classes_package-0](https://user-images.githubusercontent.com/56938752/151244448-9fb8b7b8-103f-42f6-8435-cd1f6edfb88b.png)
+
+![packages_Pyleetspeak-0](https://user-images.githubusercontent.com/56938752/151244664-e6ba07b4-600d-42ae-a7af-c025821c6dc2.png)
+
 ## Installation
 
 ---
@@ -48,6 +54,7 @@ These modules can be combined into a string to generate a leetspeak version of a
 ````bash
 pip install pyleetspeak
 ````
+
 
 ## **Word camouflaging**
 
