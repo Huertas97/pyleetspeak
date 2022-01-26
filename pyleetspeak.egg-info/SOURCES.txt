@@ -1,8 +1,10 @@
 LICENSE
 README.md
 setup.py
+pyleetspeak/InversionCamouflage.py
 pyleetspeak/LeetSpeaker.py
 pyleetspeak/Leet_NER_generator.py
+pyleetspeak/PunctuationCamouflage.py
 pyleetspeak/__init__.py
 pyleetspeak/format_converter.py
 pyleetspeak/modes.py
