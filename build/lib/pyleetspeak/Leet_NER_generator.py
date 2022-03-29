@@ -189,7 +189,7 @@ class NER_data_generator(object):
             ]
             method_idx = self.rng.choice(
                 [0, 1, 2, 3], size=1, replace=False, p=[0.45, 0.25, 0.15, 0.15]
-            ).squeeze()
+            ).squeeze().tolist()
             method = methods[method_idx]
 
         else:
@@ -209,10 +209,10 @@ class NER_data_generator(object):
             ]
             mode = self.rng.choice(
                 modes, size=1, replace=False, p=[0.25, 0.25, 0.2, 0.2, 0.1]
-            ).squeeze()
+            ).squeeze().tolist()
         uniform_change = self.rng.choice(
             [True, False], size=1, replace=False, p=[0.6, 0.4]
-        ).squeeze()
+        ).squeeze().tolist()
 
         leeter = LeetSpeaker(
             change_prb=self.change_prb,
@@ -228,13 +228,13 @@ class NER_data_generator(object):
         # Randomly select parameters value
         hyphenate = self.rng.choice(
             [True, False], size=1, replace=False, p=[0.5, 0.5]
-        ).squeeze()
+        ).squeeze().tolist()
         uniform_change = self.rng.choice(
             [True, False], size=1, replace=False, p=[0.6, 0.4]
-        ).squeeze()
+        ).squeeze().tolist()
         word_splitting = self.rng.choice(
             [True, False], size=1, replace=False, p=[0.5, 0.5]
-        ).squeeze()
+        ).squeeze().tolist()
 
         punt_camo = PuntctuationCamouflage(
             word_splitting=word_splitting,
@@ -250,7 +250,7 @@ class NER_data_generator(object):
         max_dist = self.rng.randint(1, 4)
         only_max_dist_inv = self.rng.choice(
             [True, False], size=1, replace=False, p=[0.5, 0.5]
-        ).squeeze()
+        ).squeeze().tolist()
         params = {}
         params["lang"] = self.lang
         params["max_dist"] = max_dist

@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: pyleetspeak
-Version: 0.1.8
+Version: 0.1.9
 Summary: Transform casual text into a leetspeak and word camouflage version.
 Home-page: https://github.com/Huertas97/LeetTransformer
 Author: Álvaro Huertas García
@@ -15,7 +15,7 @@ Classifier: Operating System :: Unix
 Description-Content-Type: text/markdown
 License-File: LICENSE
 
-# LeetTransformer :one::three::three::seven::robot:
+# Pyleetspeak :one::three::three::seven::robot:
 
 
 Currently in developing process. Stay tuned for new releases related to new word camouflaging methods and NER data generation.
@@ -52,8 +52,8 @@ UML diagrams
 
 ![edited_classes_package-0](https://user-images.githubusercontent.com/56938752/151244448-9fb8b7b8-103f-42f6-8435-cd1f6edfb88b.png)
 
-![packages_Pyleetspeak-0](https://user-images.githubusercontent.com/56938752/151245864-15b97644-9f37-4a48-8454-ae8824021014.png)
 
+![packages_Pyleetspeak-0](https://user-images.githubusercontent.com/56938752/151245864-15b97644-9f37-4a48-8454-ae8824021014.png)
 
 ## Installation
 
@@ -62,6 +62,7 @@ UML diagrams
 ````bash
 pip install pyleetspeak
 ````
+
 
 ## **Word camouflaging**
 

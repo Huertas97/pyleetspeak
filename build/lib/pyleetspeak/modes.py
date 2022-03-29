@@ -1,3 +1,22 @@
+#################################################################################################################################################################################
+# Dictionaries for leetspeak substitutions. The target characters are the dictionary keys 
+# that will be substituted by the characters of the dictionary values. 
+# 
+# The possible substitution implemented are divided into different modes depending on the 
+# complexity of the resemblance. These substitution have been extracted from different resources:
+#
+#   - J. Fuchs, “Gamespeak for n00bs - a linguistic and pragmatic analysis of gamers’ language,” Ph.D. dissertation, University of Graz, 2013. [Online]. Available: https://unipub.uni-graz.at/obvugrhs/content/titleinfo/231890?lang=en
+#   - K. Blashki and S. Nichol, “Game geek’s goss: linguistic creativity in young males within an online university forum (94/\/\3 933k’5 9055oneone),” 2005
+#   - R. Craenen, «Leet speak cheat sheet», GameHouse. https://www.gamehouse.com/blog/leet-speak-cheat-sheet/ (accedido 24 de enero de 2022).
+#   - M. Kavanagh, “Bridge the generation gap by decoding leetspeak,” Inside the Internet, vol. 12, no. 12, p. 11, 2005.
+#
+# COVID-19 leetspeak alphabets has been inspired from:
+#   
+#   - A. Romero-Vicente, “Word camouflage to evade content moderation,” Dec. 2021. [Online]. Available: https://www.disinfo.eu/publications/word-camouflage-to-evade-content-moderation/
+#
+#################################################################################################################################################################################
+
+
 basic_mode = [("a", ["4", "@"]), ("e", ["3"]), ("i", ["1"]), ("o", ["0"]), ("u", ["_"])]
 
 
