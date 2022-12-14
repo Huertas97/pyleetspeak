@@ -4,7 +4,8 @@ import string
 import pyphen
 import warnings
 
-class PuntctuationCamouflage(object):
+
+class PunctuationCamouflage(object):
     """Class object that implements the word camouflage by injecting punctuation symbols inside a input text
 
     Args:
@@ -58,9 +59,9 @@ class PuntctuationCamouflage(object):
         for punct_idx, punct_symb in zip(punct_idxs, punct_symbs):
             shift_len = init_len - len(camo_text)
             camo_text = (
-                camo_text[0 : punct_idx - shift_len]
+                camo_text[0: punct_idx - shift_len]
                 + punct_symb
-                + camo_text[punct_idx - shift_len :]
+                + camo_text[punct_idx - shift_len:]
             )
         return camo_text
 
@@ -85,8 +86,8 @@ class PuntctuationCamouflage(object):
             dict_hyphen = pyphen.Pyphen(lang=self.lang)
             hyphen_idx = dict_hyphen.positions(text)
 
-            if not hyphen_idx: # empty list, no syllabels detected
-              return None, None # return empty results
+            if not hyphen_idx:  # empty list, no syllabels detected
+                return None, None  # return empty results
 
             # if word_spliting select all the possitions to be injected
             if self.word_splitting:
@@ -128,7 +129,8 @@ class PuntctuationCamouflage(object):
         # Sort by idxs
         punct_idxs, punct_symbs = map(
             list,
-            zip(*sorted(zip(punct_idxs, punct_symbs), key=lambda pair: pair[0])),
+            zip(*sorted(zip(punct_idxs, punct_symbs),
+                key=lambda pair: pair[0])),
         )
 
         return punct_idxs, punct_symbs
@@ -145,11 +147,12 @@ class PuntctuationCamouflage(object):
         """
         punct_idxs, punct_symbs = self.get_punct_injections(text, n_inj)
 
-        # None if hyphen is not possible. 
+        # None if hyphen is not possible.
         if punct_idxs and punct_symbs:
-          camo_text = self.make_punct_injection(text, punct_idxs, punct_symbs)
-          return camo_text
-        
+            camo_text = self.make_punct_injection(
+                text, punct_idxs, punct_symbs)
+            return camo_text
+
         # Return input text in that case
         else:
-          return text
+            return text

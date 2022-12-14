@@ -458,6 +458,7 @@ class LeetSpeaker(object):
 
             self.text_out = text_out
             return text_out
+
             
 # TODO
 # [x] Controlar lower o upper case

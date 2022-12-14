@@ -43,8 +43,9 @@ import numpy as np
 from typing import Union, List, Tuple
 from codetiming import Timer
 from collections import OrderedDict
-from .LeetSpeaker import LeetSpeaker, PuntctuationCamouflage, InversionCamouflage
-
+from .LeetSpeaker import LeetSpeaker
+from .InversionCamouflage import InversionCamouflage
+from .PunctuationCamouflage import PunctuationCamouflage
 
 
 
@@ -196,7 +197,7 @@ class NER_data_generator(object):
       uniform_change = self.rng.choice([True, False], size=1, replace=False, p=[0.6, 0.4]).squeeze()
       word_splitting = self.rng.choice([True, False], size=1, replace=False, p=[0.5, 0.5]).squeeze()
     
-      punt_camo = PuntctuationCamouflage(
+      punt_camo = PunctuationCamouflage(
           word_splitting=word_splitting,
           uniform_change=uniform_change,
           hyphenate=hyphenate,

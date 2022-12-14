@@ -1,7 +1,7 @@
-__version__ = "0.1.5"
+__version__ = "0.2.7"
 __organization__ = "AIDA (http://aida.etsisi.upm.es/)"
 from .LeetSpeaker import LeetSpeaker
-from .PunctuationCamouflage import PuntctuationCamouflage
+from .PunctuationCamouflage import PunctuationCamouflage
 from .InversionCamouflage import InversionCamouflage
 from .format_converter import to_bilou_and_iob_format
 from .Leet_NER_generator import NER_data_generator

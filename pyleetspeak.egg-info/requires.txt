@@ -6,6 +6,6 @@ numpy==1.21.5
 Pyphen
 scikit_learn==1.0.2
 setuptools
-spacy==3.2.1
+spacy==3.4.3
 tqdm
 Unidecode

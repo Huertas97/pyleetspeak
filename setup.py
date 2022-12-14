@@ -7,9 +7,9 @@ here = os.path.abspath(os.path.dirname(__file__))
 # with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
 #     long_description = "\n" + fh.read()
 with open("README.md", mode="r", encoding="utf-8") as readme_file:
-    readme = readme_file.read()    
+    readme = readme_file.read()
 
-VERSION = '0.1.9'
+VERSION = '0.2.7'
 DESCRIPTION = 'Transform casual text into a leetspeak and word camouflage version.'
 LONG_DESCRIPTION = 'Transform casual text into a leetspeak version. You can modify the probability of different transformation, the frequency of that transformation, the type of substitutions applied among other parameters (see examples of use below).'
 
@@ -26,9 +26,9 @@ setup(
     version=VERSION,
     author="Álvaro Huertas García",
     author_email="<alvaro.huertas.garcia@alumnos.upm.es>",
-    url='https://github.com/Huertas97/LeetTransformer',
+    url='https://github.com/Huertas97/pyleetspeak',
     description=DESCRIPTION,
-    long_description= readme,  #long_description,    
+    long_description=readme,  # long_description,
     long_description_content_type="text/markdown",
     packages=find_packages(),
     install_requires=[
@@ -40,11 +40,12 @@ setup(
         "Pyphen",
         "scikit_learn==1.0.2",
         "setuptools",
-        "spacy==3.2.1",
+        "spacy==3.4.3",
         "tqdm",
         "Unidecode",
     ],
-    keywords=['leetspeak', "woord camouflage", "content evasion", "information disorders", "social media"],
+    keywords=['leetspeak', "woord camouflage", "content evasion",
+              "information disorders", "social media"],
     classifiers=[
         "Development Status :: 1 - Planning",
         "Intended Audience :: Developers",
