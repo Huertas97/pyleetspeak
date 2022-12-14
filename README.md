@@ -12,7 +12,7 @@
       - [**Define your own changes**](#define-your-own-changes)
       - [**Uniform substitutions**](#uniform-substitutions)
       - [**Get all changes**](#get-all-changes)
-    - [**PuntctuationCamouflage**](#puntctuationcamouflage)
+    - [**PunctuationCamouflage**](#punctuationcamouflage)
       - [**Parameters**](#parameters-1)
       - [**Basic Use**](#basic-use-1)
       - [**Uniform punctuation injections**](#uniform-punctuation-injections)
@@ -33,10 +33,10 @@
 Word camouflage is currently used to evade content moderation in Social Media. Therefore, this tool aims to counter new misinformation that emerges in social media platforms by providing a mechanism for simulating and generating leetspeak/word camouflaging data. 
 
 
-`pyleetspeak` includes three different, but compatible, text modifications word camouflaging methods: `LeetSpeaker`, `PuntctuationCamouflage` and `InversionCamouflage`.
+`pyleetspeak` includes three different, but compatible, text modifications word camouflaging methods: `LeetSpeaker`, `PunctuationCamouflage` and `InversionCamouflage`.
 
 - `LeetSpeaker`: This module apply the canonical 'leetspeak' method of producing visually similar character strings by replacing alphabet characters with special symbols or numbers. There's many different ways you can use leet speak. Ranging from basic vowel substitutions to really advanced combinations of various punctuation marks and glyphs. Different leetspeak levels are included.
-- `PuntctuationCamouflage`: This module apply punctuation symbol injections in the text. It is another version of producing visually similar character strings. The location of the punctuation injections and the symbols used can be selected by the user. 
+- `PunctuationCamouflage`: This module apply punctuation symbol injections in the text. It is another version of producing visually similar character strings. The location of the punctuation injections and the symbols used can be selected by the user. 
 - `InversionCamouflage`: This module create new camouflaged version of words by inverting the order of the syllables. It works by separating a input text in syllabels, select two syllabels and invert them.
 
 These modules can be combined into a string to generate a leetspeak version of an input text. Precisely, this can be achieved by using the `Leet_NER_generator` method that selects the most semantically relevant words from an input text, applies word camouflage and creates compatible annotations for NER detection.
@@ -249,7 +249,7 @@ leet_result[60]
 
 ---
 
-### **PuntctuationCamouflage**
+### **PunctuationCamouflage**
 
 Word camouflge using punctuation injections
 
@@ -273,10 +273,10 @@ Another method of producing visually similar character strings is to inject punc
 Let's see an example where we create a punctuation injected version of the spanish word `vacuna` (vaccine in English).
 
 ````python
-from pyleetspeak import PuntctuationCamouflage
+from pyleetspeak import PunctuationCamouflage
 
 text_in = "vacuna"
-wrd_camo = PuntctuationCamouflage(seed=21)  # for reproducibility
+wrd_camo = PunctuationCamouflage(seed=21)  # for reproducibility
 wrd_camo.text2punctcamo(text_in, n_inj=2)
 # 'v_ac=una'
 ````
@@ -286,9 +286,9 @@ You can also specify the behaviour of the punctuation injection.
 Let's get different punctuation symbols between all the letters in the spanish word `vacuna` with `word_splitting` set to `True`.
 
 ````python
-from pyleetspeak import PuntctuationCamouflage
+from pyleetspeak import PunctuationCamouflage
 
-wrd_camo = PuntctuationCamouflage(
+wrd_camo = PunctuationCamouflage(
     word_splitting=True,
     seed=21
 )
@@ -305,9 +305,9 @@ wrd_camo.text2punctcamo("vacuna")
 The same process but now using the same punctuation symbol using `uniform_change`.
 
 ````python
-from pyleetspeak import PuntctuationCamouflage
+from pyleetspeak import PunctuationCamouflage
 
-wrd_camo = PuntctuationCamouflage(
+wrd_camo = PunctuationCamouflage(
     word_splitting=True,
     uniform_change=True,
     seed=21 # for reproducibility
@@ -320,9 +320,9 @@ wrd_camo.text2punctcamo("vacuna")
 We can also inject puntuation symbols in random positions. Let's inject the same puntuation symbol 2 times.
 
 ````python
-from pyWordCamouflage import PuntctuationCamouflage
+from pyWordCamouflage import PunctuationCamouflage
 
-wrd_camo = PuntctuationCamouflage(
+wrd_camo = PunctuationCamouflage(
     word_splitting=False, uniform_change=True, seed=40  # for reproducibility
 )
 
@@ -337,9 +337,9 @@ wrd_camo.text2punctcamo("vacuna", n_inj=2)
 By default the punctuation symbols used are the one from `string.punctuation` built-in Python module. You can establish which punctuation symbols should be used.
 
 ````python
-from pyleetspeak import PuntctuationCamouflage
+from pyleetspeak import PunctuationCamouflage
 
-wrd_camo = PuntctuationCamouflage(
+wrd_camo = PunctuationCamouflage(
     word_splitting=False,
     uniform_change=True,
     punctuation = ["~"], 
@@ -357,9 +357,9 @@ wrd_camo.text2punctcamo("vacuna", n_inj=2)
 Usually the punctuation symbol injections occur between syllables. `PunctuationCamouflage` can lead with this situation using hyphenation dictionaries from `pyphen` PyPi Package. Hypenation dictionaries have language dependent rules for setting boundaries for hyphen. Thus, `lang` should be passed for a right syllabels detection. Currently, 69 languages are supported. To enable this kind of punctuation injection set `hyphenate` to `True`.
 
 ````python
-from pyleetspeak import PuntctuationCamouflage
+from pyleetspeak import PunctuationCamouflage
 
-wrd_camo = PuntctuationCamouflage(
+wrd_camo = PunctuationCamouflage(
     word_splitting=False,
     uniform_change=True,
     hyphenate=True,
@@ -375,9 +375,9 @@ wrd_camo.text2punctcamo("vacuna", n_inj=2)
 Notice the importance of `lang` for the syllabels detection. Instead of Spanish we will use Englisg hyphenate dictionaries. English will only detect one syllables boundary ("va-cuna") instead of two ("va-cu-na"). Notice also that a `RunTimeWarning` has been raised informing that we hace specified more punctuation injections (`n_inj`=2) than syllables boundaries available.
 
 ````python
-from pyleetspeak import PuntctuationCamouflage
+from pyleetspeak import PunctuationCamouflage
 
-wrd_camo = PuntctuationCamouflage(
+wrd_camo = PunctuationCamouflage(
     word_splitting=False,
     uniform_change=True,
     hyphenate=True,
@@ -394,9 +394,9 @@ wrd_camo.text2punctcamo("vacuna", n_inj=2)
 In the same way, if we specify a number of punctuation injections lower than all the syllables boundaries available, the syllables boundaries will be randomly selected.
 
 ````python
-from pyleetspeak import PuntctuationCamouflage
+from pyleetspeak import PunctuationCamouflage
 
-wrd_camo = PuntctuationCamouflage(
+wrd_camo = PunctuationCamouflage(
     word_splitting=False,
     uniform_change=True,
     hyphenate=True,
