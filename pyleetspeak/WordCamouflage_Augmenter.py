@@ -48,7 +48,12 @@ languages_codes_nltk = {
 }
 
 
-class NER_data_generator(object):
+class augmenter(object):
+    """
+    Class to perform word camouflage augmentation. Similar to NER_data_generator, but for text augmentation where you 
+    can customize in-depth the behaviour of the word camouflage process.
+    """
+
     def __init__(
         self,
         kw_model_name: str = "AIDA-UPM/mstsb-paraphrase-multilingual-mpnet-base-v2",
@@ -56,23 +61,74 @@ class NER_data_generator(object):
         seed: int = None,
         lang: str = "en",
 
-        # Probability of applying leetspeak or punct camo. If not, inversion camo is applied
-        p_leet_punt: float = 0.9,
-
-        # Mode of leetspeak. If none, random mode is applied
-        leet_mode: str = None,
+        # LeetSpeaker parameters
+        leet_mode: str = None,  # Mode of leetspeak. If none, random mode is applied
         leet_change_prb: float = 0.8,
         leet_change_frq: float = 0.5,
-
         # Probability oof applying uniform change in leetspeak
         leet_uniform_change: float = 0.6,
 
+        # PunctuationCamouflage parameters
+        punt_hyphenate_prb = 0.5,
+        punt_uniform_change_prb = 0.6,
+        punt_word_splitting_prb = 0.5,
+
+        # InversionCamouflage parameters
+        inv_max_dist = 4,
+        inv_only_max_dist_prb = 0.5,
+
+        # Probability of applying leetspeak or punct camo. If not, inversion camo is applied
+        leet_punt_prb: float = 0.9,
+
+        # Probability of word camouflaging techniques when inversion is not applied
+        leet_prb = 0.45,
+        punct_prb = 0.25,
+        leet_basic_punt_prb = 0.15,
+        leet_covid_basic_punt_prb = 0.15,
+
 
     ):
+        """
+        :param kw_model_name: Name of the keyword extraction model. Default: AIDA-UPM/mstsb-paraphrase-multilingual-mpnet-base-v2
+        :param max_top_n: Maximum number of keywords to extract from the sentence. Default: 5
+        :param seed: Seed for reproducibility. Default: None
+        :param lang: Language of the sentence. Default: "en"
+        :param leet_punt_prb: Probability of applying leetspeak or punct camo. If not, inversion camo is applied. Default: 0.9
+        :param leet_mode: Mode of leetspeak. If none, random mode is applied. Default: None
+        :param leet_change_prb: Probability of changing a character in leetspeak. Default: 0.8
+        :param leet_change_frq: Frequency of changing a character in leetspeak. Default: 0.5
+        :param leet_uniform_change: Probability of applying uniform change in leetspeak. Default: 0.6
+        :param p_hyphenate_prb: Probability of hyphenating a word. Default: 0.5
+        :param p_uniform_change_prb: Probability of applying uniform change in punctuation. Default: 0.6
+        :param p_word_splitting_prb: Probability of splitting a word. Default: 0.5
+        :param inv_max_dist: Maximum distance between words to invert. Default: 4
+        :param inv_only_max_dist_prb: Probability of applying inversion only to words with maximum distance. Default: 0.5
+        :param leet_prb: Probability of applying leetspeak when inversion is not applied. Default: 0.45
+        :param punct_prb: Probability of applying punctuation camouflage when inversion is not applied. Default: 0.25
+        :param leet_basic_punt_prb: Probability of applying leetspeak or punctuation camouflage when inversion is not applied. Default: 0.15
+        :param leet_covid_basic_punt_prb: Probability of applying leetspeak or punctuation camouflage when inversion is not applied. Default: 0.15
+        """
 
         self.kw_model = KeyBERT(model=kw_model_name)
         self.max_top_n = max_top_n
         self.lang = lang
+        self.leet_punt_prb = leet_punt_prb
+        self.leet_mode = leet_mode
+        self.leet_change_prb = leet_change_prb
+        self.leet_change_frq = leet_change_frq
+        self.leet_uniform_change = leet_uniform_change
+        self.punt_hyphenate_prb = punt_hyphenate_prb
+        self.punt_uniform_change_prb = punt_uniform_change_prb
+        self.punt_word_splitting_prb = punt_word_splitting_prb
+        self.inv_max_dist = inv_max_dist
+        self.inv_only_max_dist_prb = inv_only_max_dist_prb
+        self.leet_prb = leet_prb
+        self.punct_prb = punct_prb
+        self.leet_basic_punt_prb = leet_basic_punt_prb
+        self.leet_covid_basic_punt_prb = leet_covid_basic_punt_prb
+
+
+
         self.seed = seed
         # None for full random process, set seed for reproducibility in test
         random.seed(self.seed) if seed else random.seed()
@@ -174,7 +230,7 @@ class NER_data_generator(object):
     def get_random_method(self):
         # Probability of applyinh leetspeak or punct camouflage
         num = self.rng.rand()
-        if num <= self.p_leet_punt:
+        if num <= self.leet_punt_prb:
             methods = [
                 ["leetspeak"],
                 ["punct_camo"],
@@ -182,7 +238,10 @@ class NER_data_generator(object):
                 ["leetspeak-covid_basic", "punct_camo"],
             ]
             method_idx = self.rng.choice([0, 1, 2, 3], size=1, replace=False, p=[
-                                         0.45, 0.25, 0.15, 0.15]).squeeze()
+                                         self.leet_prb, 
+                                         self.punct_prb, 
+                                         self.leet_basic_punt_prb, 
+                                         self.leet_covid_basic_punt_prb]).squeeze()
             method = methods[method_idx]
 
         else:
@@ -216,11 +275,11 @@ class NER_data_generator(object):
     def get_random_punt_camo(self):
         # Randomly select parameters value
         hyphenate = self.rng.choice(
-            [True, False], size=1, replace=False, p=[0.5, 0.5]).squeeze()
+            [True, False], size=1, replace=False, p=[self.punt_hyphenate_prb, 1-self.punt_hyphenate_prb]).squeeze()
         uniform_change = self.rng.choice(
-            [True, False], size=1, replace=False, p=[0.6, 0.4]).squeeze()
+            [True, False], size=1, replace=False, p=[self.punt_uniform_change_prb, 1-self.punt_uniform_change_prb]).squeeze()
         word_splitting = self.rng.choice(
-            [True, False], size=1, replace=False, p=[0.5, 0.5]).squeeze()
+            [True, False], size=1, replace=False, p=[self.punt_word_splitting_prb, 1-self.punt_word_splitting_prb]).squeeze()
 
         punt_camo = PunctuationCamouflage(
             word_splitting=word_splitting,
@@ -233,9 +292,9 @@ class NER_data_generator(object):
 
     def get_params_inverter(self):
         # Randomly select parameters value
-        max_dist = self.rng.randint(1, 4)
+        max_dist = self.rng.randint(1, self.inv_max_dist)
         only_max_dist_inv = self.rng.choice(
-            [True, False], size=1, replace=False, p=[0.5, 0.5]).squeeze()
+            [True, False], size=1, replace=False, p=[self.inv_only_max_dist_prb, 1-self.inv_only_max_dist_prb]).squeeze()
         params = {}
         params["lang"] = self.lang
         params["max_dist"] = max_dist
@@ -322,7 +381,7 @@ class NER_data_generator(object):
 
         return method_tag.upper(), leet_kw, all_params
 
-    def generate_data(self, sentence,  stop_words: Union[List[str], str] = None, keyphrase_ngram_range: Tuple[int] = (1, 1), important_kws: List[str] = None,  **kwargs):
+    def transform(self, sentence,  stop_words: Union[List[str], str] = None, keyphrase_ngram_range: Tuple[int] = (1, 1), important_kws: List[str] = None,  **kwargs):
         # print("-"*80)
         # print(sentence)
 
