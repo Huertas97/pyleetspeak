@@ -113,7 +113,7 @@ class augmenter(object):
         self.max_top_n = max_top_n
         self.lang = lang
         self.leet_punt_prb = leet_punt_prb
-        self.leet_mode = leet_mode
+        # self.leet_mode = leet_mode
         self.leet_change_prb = leet_change_prb
         self.leet_change_frq = leet_change_frq
         self.leet_uniform_change = leet_uniform_change
@@ -249,18 +249,13 @@ class augmenter(object):
 
         return method
 
-    def get_random_leetspeak(self):
+    def get_random_leetspeak(self, mode:str=None):
         # Randomly select parameters value
-        if not self.leet_mode:  # leetspeak is random with no punct camouflage
-            modes = ["basic", "covid_basic",  "intermediate",
-                     "covid_intermediate", "advanced"]
-            mode = self.rng.choice(modes, size=1, replace=False, p=[
-                                   0.25, 0.25, 0.2, 0.2, 0.1]).squeeze()
-        else:
-            mode = self.leet_mode
-
+        if not mode: # leetspeak is random with no punct camouflage
+            modes = ["basic", "covid_basic",  "intermediate", "covid_intermediate", "advanced" ]
+            mode = self.rng.choice(modes, size=1, replace=False, p=[0.25, 0.25, 0.2, 0.2, 0.1]).squeeze()
         uniform_change = self.rng.choice([True, False], size=1, replace=False, p=[
-                                         self.leet_uniform_change,  1-self.leet_uniform_change]).squeeze()
+                                        self.leet_uniform_change,  1-self.leet_uniform_change]).squeeze()
 
         leeter = LeetSpeaker(
             change_prb=self.leet_change_prb,
@@ -268,8 +263,7 @@ class augmenter(object):
             mode=mode,
             seed=self.seed,  # for reproducibility purposes
             get_all_combs=False,
-            uniform_change=uniform_change
-        )
+            uniform_change=uniform_change)
         return leeter
 
     def get_random_punt_camo(self):
