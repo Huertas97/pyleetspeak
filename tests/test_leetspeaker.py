@@ -1,5 +1,5 @@
 # Add the Test Folder path to the sys.path list
-from pyleetspeak import LeetSpeaker, PunctuationCamouflage
+from pyleetspeak import LeetSpeaker, PunctuationCamouflage, InversionCamouflage
 import unittest
 
 
@@ -59,6 +59,30 @@ class TestText2Punct(unittest.TestCase):
         )
         res = wrd_camo.text2punctcamo(text_in, n_inj=2)
         self.assertEqual(res, 'vac~u~na')
+
+    def test_Text2Punct_hyphenization(self):
+        text_in = "vacuna"
+        wrd_camo = PunctuationCamouflage(
+            word_splitting=False,
+            uniform_change=True,
+            hyphenate=True,
+            punctuation=["|"],
+            lang="es",
+            seed=40  # for reproducibility
+        )
+        res = wrd_camo.text2punctcamo(text_in, n_inj=2)
+        self.assertEqual(res, 'va|cu|na')
+
+
+class TestText2Inv(unittest.TestCase):
+
+    def test_Text2Inv(self):
+        text = "vacuna"
+        inverter = InversionCamouflage(seed=21)
+        res = inverter.text2inversion(
+            text, lang="es", max_dist=1, only_max_dist_inv=True)
+
+        self.assertEqual(res, 'cuvana')
 
 
 if "__main__" == __name__:
