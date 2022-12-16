@@ -24,6 +24,7 @@
   - [**Leet NER data Generator**](#leet-ner-data-generator)
       - [**Usage**](#usage)
       - [**NER data formats**](#ner-data-formats)
+  - [**Data Augmentation**](#data-augmentation)
 
 
 ## Overview
@@ -598,3 +599,86 @@ pd.DataFrame({
 |  9 |             0 | data       | O           |
 | 10 |             0 | generation | O           |
 
+## **Data Augmentation**
+
+We have also incorporated a method to perform data augmentation where all possible parameters can be customized.  Let's see the following examples
+
+Default behaviour:
+
+````python
+from pyleetspeak import WordCamouflage_Augmenter
+
+        text = "vacuna"
+        augmenter = WordCamouflage_Augmenter.augmenter(
+            kw_model_name="AIDA-UPM/mstsb-paraphrase-multilingual-mpnet-base-v2",
+            max_top_n=5,
+            seed=21,
+            lang="en",
+            # LeetSpeaker parameters
+            leet_mode = None,  # Mode of leetspeak. If none, random mode is applied
+            leet_change_prb = 0.8,
+            leet_change_frq = 0.5,
+            # Probability oof applying uniform change in leetspeak
+            leet_uniform_change = 0.6,
+
+            # PunctuationCamouflage parameters
+            punt_hyphenate_prb = 0.5,
+            punt_uniform_change_prb = 0.6,
+            punt_word_splitting_prb = 0.5,
+
+            # InversionCamouflage parameters
+            inv_max_dist = 4,
+            inv_only_max_dist_prb = 0.5,
+
+            # Probability of applying leetspeak or punct camo. If not, inversion camo is applied
+            leet_punt_prb = 0.9,
+
+            # Probability of word camouflaging techniques when inversion is not applied
+            leet_prb = 0.45,
+            punct_prb = 0.25,
+            leet_basic_punt_prb = 0.15,
+            leet_covid_basic_punt_prb = 0.15,
+        )
+        augmenter.transform(text)
+        # cunava
+````
+
+In the following example we always apply inversion:
+
+````python
+from pyleetspeak import WordCamouflage_Augmenter
+
+        text = "vacuna"
+        augmenter = WordCamouflage_Augmenter.augmenter(
+            kw_model_name="AIDA-UPM/mstsb-paraphrase-multilingual-mpnet-base-v2",
+            max_top_n=5,
+            seed=21,
+            lang="en",
+            # LeetSpeaker parameters
+            leet_mode = None,  # Mode of leetspeak. If none, random mode is applied
+            leet_change_prb = 0.8,
+            leet_change_frq = 0.5,
+            # Probability oof applying uniform change in leetspeak
+            leet_uniform_change = 0.6,
+
+            # PunctuationCamouflage parameters
+            punt_hyphenate_prb = 0.5,
+            punt_uniform_change_prb = 0.6,
+            punt_word_splitting_prb = 0.5,
+
+            # InversionCamouflage parameters
+            inv_max_dist = 4,
+            inv_only_max_dist_prb = 0.5,
+
+            # Probability of applying leetspeak or punct camo. If not, inversion camo is applied
+            leet_punt_prb = 0.0, # Only inversion camo is applied
+
+            # Probability of word camouflaging techniques when inversion is not applied
+            leet_prb = 0.45,
+            punct_prb = 0.25,
+            leet_basic_punt_prb = 0.15,
+            leet_covid_basic_punt_prb = 0.15,
+        )
+        augmenter.transform(text)
+        # cunava
+````
