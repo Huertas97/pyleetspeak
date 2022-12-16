@@ -5,6 +5,7 @@ pyleetspeak/InversionCamouflage.py
 pyleetspeak/LeetSpeaker.py
 pyleetspeak/Leet_NER_generator.py
 pyleetspeak/PunctuationCamouflage.py
+pyleetspeak/WordCamouflage_Augmenter.py
 pyleetspeak/__init__.py
 pyleetspeak/format_converter.py
 pyleetspeak/modes.py
@@ -14,3 +15,5 @@ pyleetspeak.egg-info/SOURCES.txt
 pyleetspeak.egg-info/dependency_links.txt
 pyleetspeak.egg-info/requires.txt
 pyleetspeak.egg-info/top_level.txt
+tests/__init__.py
+tests/test_leetspeaker.py

@@ -1,4 +1,4 @@
-__version__ = "0.2.8"
+__version__ = "0.3.0"
 __organization__ = "AIDA (http://aida.etsisi.upm.es/)"
 from .LeetSpeaker import LeetSpeaker
 from .PunctuationCamouflage import PunctuationCamouflage
