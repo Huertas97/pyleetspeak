@@ -82,7 +82,7 @@ class LeetSpeaker(object):
             None,
         ]:
             raise RuntimeError(
-                f"""Internal error - Unkown mode. The mode selected should be one of the followings:
+                f"""Internal error - Unkown mode: {self.mode}. The mode selected should be one of the followings:
             "basic", "intermediate", "advanced", "covid_basic", "covid_intermediate", None
             If you do not want to use any pre-defined mode set the mode to None. "basic" is the default mode.
             """
@@ -96,14 +96,16 @@ class LeetSpeaker(object):
         elif self.mode == "covid_basic":
             self.list_changes = copy.deepcopy(covid_basic_word_camouflage)
         elif self.mode == "covid_intermediate":
-            self.list_changes = copy.deepcopy(covid_intermediate_word_camouflage)
+            self.list_changes = copy.deepcopy(
+                covid_intermediate_word_camouflage)
         # No pre-defined changes will be used
         elif self.mode == None:
             self.list_changes = []
 
         # Changes introduced by the user will be added to the predefined changes
         if user_changes:
-            assert isinstance(user_changes, dict) or isinstance(user_changes, list)
+            assert isinstance(user_changes, dict) or isinstance(
+                user_changes, list)
             self.user_changes = user_changes
             self.list_changes = self.add_user_changes()
 
@@ -159,9 +161,9 @@ class LeetSpeaker(object):
             # take into account the shift made in idxs after each substitution
             shift_len = init_len - len(text)
             text = (
-                text[0 : idx_start - shift_len]
+                text[0: idx_start - shift_len]
                 + t2_selected
-                + text[idx_end - shift_len :]
+                + text[idx_end - shift_len:]
             )
         return text
 
@@ -244,7 +246,8 @@ class LeetSpeaker(object):
                                                  can be applied.
         """
 
-        pattern = rf"(?=({t1}))"  # capturing group inside a lookahead matching overlapping patterns
+        # capturing group inside a lookahead matching overlapping patterns
+        pattern = rf"(?=({t1}))"
         matches_idxs = []
         matches_symbols = []
 
@@ -253,13 +256,14 @@ class LeetSpeaker(object):
         if isinstance(t2, list):
             for m in re.finditer(pattern, text, re.IGNORECASE):
                 matches_idxs.append((m.start(1), m.end(1)))
-                t2_comb = [(text[m.start(1) : m.end(1)], t2_sub) for t2_sub in t2]
+                t2_comb = [(text[m.start(1): m.end(1)], t2_sub)
+                           for t2_sub in t2]
                 matches_symbols.append(t2_comb)
         # E.g. Input: leetspeaak;  Type sub: ("e", "3") --> Idx [(1, 2), (2, 3), (6, 7)] ; Symbols [[('e', '3')], [('e', '3')], [('e', '3')]]
         else:
             for m in re.finditer(pattern, text, re.IGNORECASE):
                 matches_idxs.append((m.start(1), m.end(1)))
-                matches_symbols.append([(text[m.start(1) : m.end(1)], t2)])
+                matches_symbols.append([(text[m.start(1): m.end(1)], t2)])
 
         return matches_idxs, matches_symbols
 
@@ -306,7 +310,8 @@ class LeetSpeaker(object):
         for change in list_of_changes:
             t1, t2 = change
             idxs, symbols = self.find_all_matches(text_in, t1, t2)
-            matches_idxs.extend(idxs) if idxs and idxs[0] not in matches_idxs else None
+            matches_idxs.extend(
+                idxs) if idxs and idxs[0] not in matches_idxs else None
             matches_symbols.extend(symbols) if symbols else None
 
         # Sort both list according to idxs positions
@@ -315,7 +320,8 @@ class LeetSpeaker(object):
         # Symbols [[('e', '3')], [('e', '3')], [('e', '3')], [('a', '4'), ('a', '@')], [('a', '4'), ('a', '@')]]
         matches_idxs, matches_symbols = map(
             list,
-            zip(*sorted(zip(matches_idxs, matches_symbols), key=lambda pair: pair[0])),
+            zip(*sorted(zip(matches_idxs, matches_symbols),
+                key=lambda pair: pair[0])),
         )
         return matches_idxs, matches_symbols
 
@@ -372,9 +378,9 @@ class LeetSpeaker(object):
                     # take into account the shift made in idxs after each substitution
                     shift_len = init_len - len(leet_text)
                     leet_text = (
-                        leet_text[0 : idx_start - shift_len]
+                        leet_text[0: idx_start - shift_len]
                         + t2_selected
-                        + leet_text[idx_end - shift_len :]
+                        + leet_text[idx_end - shift_len:]
                     )
                 all_leet_text.append(leet_text)
 
@@ -438,7 +444,8 @@ class LeetSpeaker(object):
                     text_in, t1, t2
                 )
                 all_matches_idxs.extend(matches_idxs) if matches_idxs else None
-                all_matches_symbols.extend(matches_symbols) if matches_symbols else None
+                all_matches_symbols.extend(
+                    matches_symbols) if matches_symbols else None
 
             if all_matches_idxs and all_matches_symbols:
                 all_matches_idxs, all_matches_symbols = map(
@@ -459,7 +466,7 @@ class LeetSpeaker(object):
             self.text_out = text_out
             return text_out
 
-            
+
 # TODO
 # [x] Controlar lower o upper case
 # [x] Añadir nuevos cambios
@@ -475,15 +482,15 @@ class LeetSpeaker(object):
 # [ ] Preparar modificaciones que implican espacios. Ver lo en el inforde de disinfolab EU
 # [ ] Hacer más eficiente el obtener todas las combinaciones uniformes. Tarda más que obteniendo todas.
 
-### COMODINES
+# COMODINES
 # [ ] Añadir * y '' (de eliminar) a todas las combinaciones. Hay una serie de símbolos comodines que son comunes
 # para varias letras. Podemos añadirlas en todos los cambios. Pero también podemos darle menos prob de salir. Habría
 # que dar esa posibilidad.
-## Comodines Vocales --> "*", "", "/",  "_"
-## Las consonantes no suelen desaparecer
+# Comodines Vocales --> "*", "", "/",  "_"
+# Las consonantes no suelen desaparecer
 
 
-## Punctuation WORD CAMOUFLAGE
+# Punctuation WORD CAMOUFLAGE
 # Tenemos varios metodos !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
 
 # [x] 1 - Single random/syllable injection - Meter un simbolo de puntuacion en una posicion aleatoria de la palabra.
@@ -498,12 +505,12 @@ class LeetSpeaker(object):
 # Ej. Vacuna --> v-a-c-u-n-a, v_a_c_u_n_a, v.a.c.u.n.a, v.a.c_u.n.a
 
 
-## INVERSION
+# INVERSION
 # Partir la palabra en silabas e intercambiar dos de ellas.
 # Multilingual hypenithation algrithms: https://pypi.org/project/pyphen/
 # Ej. Vacuna --> nacuva
 
-#### Combinar Word Camouflage y LeetSpeak
+# Combinar Word Camouflage y LeetSpeak
 # El Punctuation word camouflage está centrado en emplear símbolos de puntuación para camuflar la palabra. Mientras que el leetspeak emplea sustituciones
 # para camuflar la palabra.
 # De este modo son compatibles, pero yo lo organizaría de la siguiente manera. Primero se haría leetspeak y luego puntuation camouflage.
