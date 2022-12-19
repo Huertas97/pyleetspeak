@@ -12,6 +12,7 @@ import itertools
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+import yake
 
 languages_codes_nltk = {
     "es": "spanish",
@@ -50,46 +51,42 @@ languages_codes_nltk = {
 
 class augmenter(object):
     """
-    Class to perform word camouflage augmentation. Similar to NER_data_generator, but for text augmentation where you 
+    Class to perform word camouflage augmentation. Similar to NER_data_generator, but for text augmentation where you
     can customize in-depth the behaviour of the word camouflage process.
     """
 
     def __init__(
         self,
+        extractor_type: str,  # "yake" or "keybert",
+        # KeyBERT parameters
         kw_model_name: str = "AIDA-UPM/mstsb-paraphrase-multilingual-mpnet-base-v2",
         max_top_n: int = 5,
         seed: int = None,
         lang: str = "en",
-
         # LeetSpeaker parameters
         leet_mode: str = None,  # Mode of leetspeak. If none, random mode is applied
         leet_change_prb: float = 0.8,
         leet_change_frq: float = 0.5,
         # Probability oof applying uniform change in leetspeak
         leet_uniform_change: float = 0.6,
-
         # PunctuationCamouflage parameters
-        punt_hyphenate_prb = 0.5,
-        punt_uniform_change_prb = 0.6,
-        punt_word_splitting_prb = 0.5,
-
+        punt_hyphenate_prb=0.5,
+        punt_uniform_change_prb=0.6,
+        punt_word_splitting_prb=0.5,
         # InversionCamouflage parameters
-        inv_max_dist = 4,
-        inv_only_max_dist_prb = 0.5,
-
+        inv_max_dist=4,
+        inv_only_max_dist_prb=0.5,
         # Probability of applying leetspeak or punct camo. If not, inversion camo is applied
         leet_punt_prb: float = 0.9,
-
         # Probability of word camouflaging techniques when inversion is not applied
-        leet_prb = 0.45,
-        punct_prb = 0.25,
-        leet_basic_punt_prb = 0.15,
-        leet_covid_basic_punt_prb = 0.15,
-
-
+        leet_prb=0.45,
+        punct_prb=0.25,
+        leet_basic_punt_prb=0.15,
+        leet_covid_basic_punt_prb=0.15,
     ):
         """
-        :param kw_model_name: Name of the keyword extraction model. Default: AIDA-UPM/mstsb-paraphrase-multilingual-mpnet-base-v2
+        :param extractor_type: Type of extractor to use. "yake" or "keybert".
+        :param kw_model_name: Name of the keyword extraction model for KeyBERT. Default: AIDA-UPM/mstsb-paraphrase-multilingual-mpnet-base-v2
         :param max_top_n: Maximum number of keywords to extract from the sentence. Default: 5
         :param seed: Seed for reproducibility. Default: None
         :param lang: Language of the sentence. Default: "en"
@@ -108,10 +105,23 @@ class augmenter(object):
         :param leet_basic_punt_prb: Probability of applying leetspeak or punctuation camouflage when inversion is not applied. Default: 0.15
         :param leet_covid_basic_punt_prb: Probability of applying leetspeak or punctuation camouflage when inversion is not applied. Default: 0.15
         """
-
-        self.kw_model = KeyBERT(model=kw_model_name)
+        self.extractor_type = extractor_type
         self.max_top_n = max_top_n
         self.lang = lang
+
+        if self.extractor_type == "yake":
+            self.yake_extractor = yake.KeywordExtractor(
+                lan=self.lang,
+                n=1,  # Number of words in the keyword
+                dedupLim=0.9,  # Deduplication limit
+                dedupFunc="seqm",  # Deduplication function
+                windowsSize=1,  # Window size, used for deduplication purposes
+                top=self.max_top_n,  # Number of keywords to be returned
+                features=None,  # Features to be used for weighting the keywords.
+            )
+        elif self.extractor_type == "keybert":
+            self.kw_model = KeyBERT(model=kw_model_name)
+
         self.leet_punt_prb = leet_punt_prb
         # self.leet_mode = leet_mode
         self.leet_change_prb = leet_change_prb
@@ -127,8 +137,6 @@ class augmenter(object):
         self.leet_basic_punt_prb = leet_basic_punt_prb
         self.leet_covid_basic_punt_prb = leet_covid_basic_punt_prb
 
-
-
         self.seed = seed
         # None for full random process, set seed for reproducibility in test
         random.seed(self.seed) if seed else random.seed()
@@ -138,12 +146,15 @@ class augmenter(object):
             rng = np.random.RandomState()
         self.rng = rng
 
-    def get_keywords(self, sentence,  stop_words, keyphrase_ngram_range, important_kws, **kwargs):
+    def get_keywords(
+        self, sentence, stop_words, keyphrase_ngram_range, important_kws, **kwargs
+    ):
         # if stopwords are not a list of stopwords, a pre-defined nltk list will be used
         if isinstance(stop_words, str):
             if stop_words not in list(languages_codes_nltk.keys()):
                 raise RuntimeError(
-                    f"Language selected not available. Please select one of the follolowing: {list(languages_codes_nltk.keys())}")
+                    f"Language selected not available. Please select one of the follolowing: {list(languages_codes_nltk.keys())}"
+                )
             else:
                 stop_words = stopwords.words(languages_codes_nltk[stop_words])
 
@@ -156,16 +167,28 @@ class augmenter(object):
         else:
             n_kw = random.randint(1, self.max_top_n)
 
-        kws = self.kw_model.extract_keywords(
-            sentence,  stop_words=stop_words, keyphrase_ngram_range=keyphrase_ngram_range, top_n=n_kw, **kwargs)
+        if self.extractor_type == "yake":
+            kws = self.yake_extractor.extract_keywords(sentence)
+
+        elif self.extractor_type == "keybert":
+            kws = self.kw_model.extract_keywords(
+                sentence,
+                stop_words=stop_words,
+                keyphrase_ngram_range=keyphrase_ngram_range,
+                top_n=n_kw,
+                **kwargs,
+            )
 
         kws = [kw for kw, sim_score in kws]
 
         if important_kws:
             pattern = re.compile("|".join(important_kws), re.IGNORECASE)
             important_kws_find = re.findall(pattern, sentence)
-            [kws.append(imp_kw.lower())
-             for imp_kw in important_kws_find if imp_kw.lower() not in kws]
+            [
+                kws.append(imp_kw.lower())
+                for imp_kw in important_kws_find
+                if imp_kw.lower() not in kws
+            ]
 
         return kws
 
@@ -192,15 +215,17 @@ class augmenter(object):
                     delete_overlapping_rg.append(a)
 
         # Get the idxs of the sublist of all matches that are not discarded
-        selected_idxs = [i for i, e in enumerate(
-            list_idxs) if e not in delete_overlapping_rg]
+        selected_idxs = [
+            i for i, e in enumerate(list_idxs) if e not in delete_overlapping_rg
+        ]
 
         # Extract only the selected matches taht do not overlap or if overlap are the larger one
-        ori_data["meta"] = [dict_in for i, dict_in in enumerate(
-            ori_data["meta"]) if i in selected_idxs]
+        ori_data["meta"] = [
+            dict_in for i, dict_in in enumerate(ori_data["meta"]) if i in selected_idxs
+        ]
         return ori_data
 
-    def get_new_idxs(self, kw_in, kw_leet, ori_idx,  shift):
+    def get_new_idxs(self, kw_in, kw_leet, ori_idx, shift):
         end_ori = ori_idx[-1]
         shift = len(kw_leet) - len(kw_in) + shift
         end_leet = end_ori + shift
@@ -217,13 +242,15 @@ class augmenter(object):
         for init_idxs, leet_kw in zip(ori_idxs, leet_kws):
             shift_len = init_len - len(new_s)
             start_ori, end_ori = init_idxs
-            new_s = new_s[:start_ori - shift_len] + \
-                leet_kw + new_s[end_ori - shift_len:]
+            new_s = (
+                new_s[: start_ori - shift_len] + leet_kw + new_s[end_ori - shift_len :]
+            )
 
         # Check leet idxs match with kw_leet in leet_sent
         for leet_kw, leet_idx in zip(leet_kws, leet_idxs):
-            assert leet_kw == new_s[leet_idx[0]:leet_idx[1]
-                                    ], "Leet kws inserted do not match with Leet indexes"
+            assert (
+                leet_kw == new_s[leet_idx[0] : leet_idx[1]]
+            ), "Leet kws inserted do not match with Leet indexes"
 
         return new_s
 
@@ -237,11 +264,17 @@ class augmenter(object):
                 ["leetspeak-basic", "punct_camo"],
                 ["leetspeak-covid_basic", "punct_camo"],
             ]
-            method_idx = self.rng.choice([0, 1, 2, 3], size=1, replace=False, p=[
-                                         self.leet_prb, 
-                                         self.punct_prb, 
-                                         self.leet_basic_punt_prb, 
-                                         self.leet_covid_basic_punt_prb]).squeeze()
+            method_idx = self.rng.choice(
+                [0, 1, 2, 3],
+                size=1,
+                replace=False,
+                p=[
+                    self.leet_prb,
+                    self.punct_prb,
+                    self.leet_basic_punt_prb,
+                    self.leet_covid_basic_punt_prb,
+                ],
+            ).squeeze()
             method = methods[method_idx]
 
         else:
@@ -249,13 +282,25 @@ class augmenter(object):
 
         return method
 
-    def get_random_leetspeak(self, mode:str=None):
+    def get_random_leetspeak(self, mode: str = None):
         # Randomly select parameters value
-        if not mode: # leetspeak is random with no punct camouflage
-            modes = ["basic", "covid_basic",  "intermediate", "covid_intermediate", "advanced" ]
-            mode = self.rng.choice(modes, size=1, replace=False, p=[0.25, 0.25, 0.2, 0.2, 0.1]).squeeze()
-        uniform_change = self.rng.choice([True, False], size=1, replace=False, p=[
-                                        self.leet_uniform_change,  1-self.leet_uniform_change]).squeeze()
+        if not mode:  # leetspeak is random with no punct camouflage
+            modes = [
+                "basic",
+                "covid_basic",
+                "intermediate",
+                "covid_intermediate",
+                "advanced",
+            ]
+            mode = self.rng.choice(
+                modes, size=1, replace=False, p=[0.25, 0.25, 0.2, 0.2, 0.1]
+            ).squeeze()
+        uniform_change = self.rng.choice(
+            [True, False],
+            size=1,
+            replace=False,
+            p=[self.leet_uniform_change, 1 - self.leet_uniform_change],
+        ).squeeze()
 
         leeter = LeetSpeaker(
             change_prb=self.leet_change_prb,
@@ -263,24 +308,37 @@ class augmenter(object):
             mode=mode,
             seed=self.seed,  # for reproducibility purposes
             get_all_combs=False,
-            uniform_change=uniform_change)
+            uniform_change=uniform_change,
+        )
         return leeter
 
     def get_random_punt_camo(self):
         # Randomly select parameters value
         hyphenate = self.rng.choice(
-            [True, False], size=1, replace=False, p=[self.punt_hyphenate_prb, 1-self.punt_hyphenate_prb]).squeeze()
+            [True, False],
+            size=1,
+            replace=False,
+            p=[self.punt_hyphenate_prb, 1 - self.punt_hyphenate_prb],
+        ).squeeze()
         uniform_change = self.rng.choice(
-            [True, False], size=1, replace=False, p=[self.punt_uniform_change_prb, 1-self.punt_uniform_change_prb]).squeeze()
+            [True, False],
+            size=1,
+            replace=False,
+            p=[self.punt_uniform_change_prb, 1 - self.punt_uniform_change_prb],
+        ).squeeze()
         word_splitting = self.rng.choice(
-            [True, False], size=1, replace=False, p=[self.punt_word_splitting_prb, 1-self.punt_word_splitting_prb]).squeeze()
+            [True, False],
+            size=1,
+            replace=False,
+            p=[self.punt_word_splitting_prb, 1 - self.punt_word_splitting_prb],
+        ).squeeze()
 
         punt_camo = PunctuationCamouflage(
             word_splitting=word_splitting,
             uniform_change=uniform_change,
             hyphenate=hyphenate,
             lang=self.lang,
-            seed=self.seed  # for reproducibility
+            seed=self.seed,  # for reproducibility
         )
         return punt_camo
 
@@ -288,7 +346,11 @@ class augmenter(object):
         # Randomly select parameters value
         max_dist = self.rng.randint(1, self.inv_max_dist)
         only_max_dist_inv = self.rng.choice(
-            [True, False], size=1, replace=False, p=[self.inv_only_max_dist_prb, 1-self.inv_only_max_dist_prb]).squeeze()
+            [True, False],
+            size=1,
+            replace=False,
+            p=[self.inv_only_max_dist_prb, 1 - self.inv_only_max_dist_prb],
+        ).squeeze()
         params = {}
         params["lang"] = self.lang
         params["max_dist"] = max_dist
@@ -362,7 +424,11 @@ class augmenter(object):
                 params = self.get_params_inverter()
                 params["text_in"] = leet_kw
                 leet_kw = inverter.text2inversion(
-                    leet_kw, lang=params["lang"], max_dist=params["max_dist"], only_max_dist_inv=params["only_max_dist_inv"])
+                    leet_kw,
+                    lang=params["lang"],
+                    max_dist=params["max_dist"],
+                    only_max_dist_inv=params["only_max_dist_inv"],
+                )
 
                 # Save arameters
                 params["text_out"] = leet_kw
@@ -375,7 +441,14 @@ class augmenter(object):
 
         return method_tag.upper(), leet_kw, all_params
 
-    def transform(self, sentence,  stop_words: Union[List[str], str] = None, keyphrase_ngram_range: Tuple[int] = (1, 1), important_kws: List[str] = None,  **kwargs):
+    def transform(
+        self,
+        sentence,
+        stop_words: Union[List[str], str] = None,
+        keyphrase_ngram_range: Tuple[int] = (1, 1),
+        important_kws: List[str] = None,
+        **kwargs,
+    ):
         # print("-"*80)
         # print(sentence)
 
@@ -383,8 +456,9 @@ class augmenter(object):
         if not stop_words:
             stop_words = self.lang  # if not stopwords select lang stopwords
         # Compute keyBERT
-        kws = self.get_keywords(sentence, stop_words,
-                                keyphrase_ngram_range, important_kws, **kwargs)
+        kws = self.get_keywords(
+            sentence, stop_words, keyphrase_ngram_range, important_kws, **kwargs
+        )
 
         # discard kws with len < 1
         kws = [kw for kw in kws if len(kw) > 1]
@@ -401,7 +475,7 @@ class augmenter(object):
                 meta_data.append(dict_meta_data)
 
         # Sort keywords by occurence
-        meta_data = sorted(meta_data, key=lambda i: i['init_idxs'])
+        meta_data = sorted(meta_data, key=lambda i: i["init_idxs"])
         ori_data["meta"].extend(meta_data)
 
         # Filter overlapping matches. If overlaps get the larger one
@@ -429,8 +503,7 @@ class augmenter(object):
                 dict_in["tag"] = "Unleeted"
 
             # Calculate the new indexes for each leet_speak keyword
-            leet_idxs, shift = self.get_new_idxs(
-                kw_ori, kw_leet, ori_idx,  shift)
+            leet_idxs, shift = self.get_new_idxs(kw_ori, kw_leet, ori_idx, shift)
             dict_in["leet_idxs"] = leet_idxs
 
         # Obtain leet sentence

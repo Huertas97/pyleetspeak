@@ -9,3 +9,4 @@ setuptools
 spacy==3.4.3
 tqdm
 Unidecode
+yake==0.4.8
