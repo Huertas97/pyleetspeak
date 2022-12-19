@@ -59,9 +59,9 @@ class PunctuationCamouflage(object):
         for punct_idx, punct_symb in zip(punct_idxs, punct_symbs):
             shift_len = init_len - len(camo_text)
             camo_text = (
-                camo_text[0: punct_idx - shift_len]
+                camo_text[0 : punct_idx - shift_len]
                 + punct_symb
-                + camo_text[punct_idx - shift_len:]
+                + camo_text[punct_idx - shift_len :]
             )
         return camo_text
 
@@ -124,13 +124,18 @@ class PunctuationCamouflage(object):
             )
         # Use different punctuation symbol for each idx to be injected
         else:
+            if n_inj > len(self.punctuation):
+                warnings.warn(
+                    f"""You have selected a number of punctuation marks to insert ({n_inj}) greater than the maximum number of punctuation symbols ({len(self.punctuation)}). Therefore, the number of punctuation to be inserted is reduced to the maximum number of punctuation symbols. """,
+                    RuntimeWarning,
+                )
+                n_inj = len(self.punctuation)
             punct_symbs = list(random.sample(self.punctuation, k=n_inj))
 
         # Sort by idxs
         punct_idxs, punct_symbs = map(
             list,
-            zip(*sorted(zip(punct_idxs, punct_symbs),
-                key=lambda pair: pair[0])),
+            zip(*sorted(zip(punct_idxs, punct_symbs), key=lambda pair: pair[0])),
         )
 
         return punct_idxs, punct_symbs
@@ -149,8 +154,7 @@ class PunctuationCamouflage(object):
 
         # None if hyphen is not possible.
         if punct_idxs and punct_symbs:
-            camo_text = self.make_punct_injection(
-                text, punct_idxs, punct_symbs)
+            camo_text = self.make_punct_injection(text, punct_idxs, punct_symbs)
             return camo_text
 
         # Return input text in that case
