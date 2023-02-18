@@ -267,3 +267,239 @@ covid_intermediate_word_camouflage = [
 #     ("f", ["ph", "|=", "|#", "/=", "ƒ"]),
 #     ("b", ["I3", "8", "13", "|3", "!3", "(3", "ß", "Β"]),
 #     ("r", ["
+
+
+
+##### AUGMENTER MODES
+
+# It is pretty readable and understandable
+# 1. simple character substitution. 
+# 2. substituting every vowel for a number. 
+basic_mode = [("a", ["4", "@"]), ("e", ["3"]), ("i", ["1"]), ("o", ["0"]), ("u", ["_"])]
+
+# Readability and understandable is harder. 
+# 1. complex character substitution, punctuation injection, and simple word inversions. 
+# 2. Vowel substitution
+# 3. Consonants are also substituted.
+# 4. These characters are substituted with either numbers or simple punctuation marks in a reduced number of ways. 
+# 5. Readable symbols from other alphabets that closely resemble the regular alphabet characters are included. 
+intermediate_mode = [
+    ("a", ["4", "@", "ä"]),
+    ("c", ["[", "©", "{", "ç"]),
+    ("d", ["|)"]),
+    ("e", ["3", "ë", "€"]),
+    ("g", ["6", "9", "ĝ"]), # 
+    ("h", ["#", "|-|", "|+|", "ħ"]),
+    ("i", ["1", "!", "¡", "ï"]),
+    ("j", ["]", "._|"]), # 
+    ("k", ["|<", "!<", "𝕂"]),
+    ("l", ["1", "|_", "|", "£", "ℒ"]),
+    ("m", ["/V\\", "[V]", "]V[", "ʍ", "ℳ"]),
+    ("n", ["|\\|", "{\\}", "ñ", "ℕ", "η"]),
+    ("o", ["0", "<>", "Ø", "ö"]),
+    ("p", ["|>", "₱", "ℙ"]),
+    ("q", ["0_", "9", "()_"]), #
+    ("s", ["5", "§", "$"]),
+    ("t", ["7", "+"]), 
+    ("u", ["|_|", "(_)", "ü"]),
+    ("v", ["\\/"]),
+    ("w", ["\\/\\/", "ω"]),
+    ("x", ["><", "}{"]), 
+    ("z", ["2", "%", "ž"]),
+    ("f", ["ƒ", "ℱ"]), 
+    ("b", ["|3", "I3", "ß"]),
+    ("r", ["/2", "Я", "®"]), # "|2",
+    ("y", ["¥", "'/'", "γ"]),
+]
+
+
+# Readability and understandable is a challenge.
+# Advanced Leet is in fact a combination of Basic and Intermediate Leet, but increases the use of punctuation marks 
+# 1. Intermediate techniques as well as more complex word inversions and character substitution. 
+# 2. Vowel and Consonants are substituted.
+# 3. These characters are replaced by numbers and various punctuation symbols. The punctuation symbols considered are larger and more complex.
+# 4. The number of readable symbols from other alphabets that closely resemble the regular alphabet characters increase and are more complex.
+# 5. Mathematical symbols are included
+advanced_mode = [
+    ("a", ["4", "@", "ä", "/\\", "Д", "∆", "∀"]),
+    ("c", ["[", "©", "{", "<", "ç", "ℂ", "«" ]),
+    ("d", [")", "|)", "(|", "[)", "|>", "∂"]),
+    ("e", ["3", "ë", "€", "[-", "∈", "ℯ", "∃", "Σ"]),
+    ("g", ["6", "9", "ĝ", "&", "(_+", "(?,", "[,", "{,"]),
+    ("h", ["#", "|-|", "|+|", "ħ", "/-/", "[-]", "]-[", ")-(", "ℋ"]),
+    ("i", ["1", "!", "¡", "ï", "|", "][", "í"]),
+    ("j", [",_|", "_|", "._|", "._]", "_]"]),
+    ("k", ["|<", "!<", "𝕂", ">|", "/<", "1<", "|(", "|{", "₭", "κ" ]),
+    ("l", ["1", "|_", "|", "£", "ℒ", "7", "ʅ"]),
+    ("m", ["/V\\", "[V]", "]V[", "ʍ", "/\\/\\", "[]V[]", "|\\/|", "^^", "<\\/>", "]\\/["]),
+    ("n", ["|\\|", "{\\}", "ñ", "ℕ", "^/", "/\\/", "[\\]", "<\\>", "ท", "π", "¬", "η"]),
+    ("o", ["0", "<>", "Ø", "ö", "º", "(0)", "()", "[]", "φ"]),
+    ("p", ["|>", "|*", "[]D", "|^", "|7", "|#", "₱"]),
+    ("q", ["0_", "9", "()_", "(_,)", "<|", "&"]),
+    ("s", ["5", "§", "$", "ś", "š", "∫"]),
+    ("t", ["7", "+", "-|-", "']['", "~|~", "ţ", "†", "Ŧ", "⊥"]),
+    ("v", ["\\/", "|/", "\\|", "▼", "√"]),
+    ("w", ["\\/\\/", "ω", "VV", "\\N", "'//", "\\\\'", "\\^/", "\\|/", "\\_|_/", "\\_:_/", "Ш"]),
+    ("x", ["><", "}{", ")(", "][", "×"]),
+    ("z", ["2", "%", "ž", "7_", "-/_"]),
+    ("f", ["ƒ", "ℱ", "φ", "ph", "|=_", "|#", "/="]),
+    ("b", ["|3", "I3", "ß", "8", "13", "!3", "(3"]),
+    ("r", ["/2", "Я", "®", "2", "12","|9","|`", "₹", "𝔑"]),
+    ("y", ["¥", "'/'", "γ", "7","\\|/","\\//", "Ч"]),
+    ("u", ["|_|", "(_)", "ü", "V","L|", "บ"])
+]
+
+# Readability and understandable is a challenge.
+# Vowels and consonants can be substituted by various complex
+# punctuation symbols, letters from other alphabets that reseemble, 
+# mathematic symbols
+# makes harder the readabilty
+# We include pronunciation substitutions "kks" "ecks" -> x "ph" -> f  "j" -> y  m -> "nn"  u -> "oo", o -> "oh", s -> "ehs" b -> "v" g --> "gee"
+expert_mode = [
+    ("a", ["4", "@", "ä", "/\\", "Д", "∆", "â", "ª", "∆", "Â", "Ã", "λ", "Д"]),
+    ("b", ["|3", "I3", "ß", "8", "13", "!3", "(3", "ß", "j3", "v"]),
+    ("c", ["[", "©", "{", "<", "ç", "«", "¢", "("]),
+    ("d", [")", "|)", "(|", "[)", "|>", "∂", "Ð", "đ"]),
+    ("e", ["3", "ë", "€", "∈", "ℯ", "∃", "Σ", "Ã«", "ê", "Ë", "£", "[-"]),
+    ("f", ["ƒ", "ph", "|=_", "|#", "/="]),
+    ("g", ["6", "9", "ĝ", "&", "(_+", "(?,", "[,", "{,", "(+", "gee"]),
+    ("h", ["#", "|-|", "|+|", "/-/", "[-]", "]-[", ")-(", "ħ", "(-)", ":-:", ")-(,"]),
+    ("i", ["1", "[]", "|", "!", "][", "ï", "í"]),
+    ("j", [",|", "|", ".|", ".]", "]", "ĵ"]),
+    ("k", [">|", "|<", "/<", "1<", "|(", "|{", "ķ", "₭"]),
+    ("l", ["1", "7", "|", "|", "ł", "€", "£"]),
+    ("m", ["//", "/V", "[V]", "[]V[]", "|/|", "^^", "</>", "]/[", "µ", "₥", "ʍ"]),
+    ("n", ["^/", "||", "//", "[]", "<>", "{}", "ñ", "ń", "π", "¬"]),
+    ("o", ["(0)", "()", "[]", "<>", "ö", "ó", "ô", "0", "ø"]),
+    ("p", ["|*", "|Âº", "|^", "|>", "|7", "þ", "¶", "₱"]),
+    ("q", ["(,)", "9", "()", "2", "0", "<|", "&", "q", "Ω", "œ"]),
+    ("r", ["I2","2","12","|9","|","/2", "®", "ρ"]), 
+    ("s", ["5", "$", "2", "ś", "š", "ş"]), 
+    ("t", ["7", "+", "-|-", "']['", "|", "~|~", "ŧ", "ţ", "†"]), 
+    ("u", ["_", "µ", "ʊ"]), ("v", ["\/", "|/", "\|", "ʋ", "ν"]), 
+    ("w", ["\/\/", "VV", "\N", "'//", "\\'", "\^/", "\|/", "\|/", "\:/", "ω", "ѡ", "𝕎", "₩", "v²"]), 
+    ("x", ["><", "}{", ")(", "][", "χ", "×"]), 
+    ("y", ["ý", "ÿ", "¥", "Ч"]),
+    ("z", ["2", "7_", "-/", "%", "ž", "ź", "ζ", "ʑ", "ż","𝕫", "ℤ", "ẕ"])
+]
+
+
+# A	∠	Angle	∠ABC is an angle formed by three points A, B and C
+# B	ℕ	Natural numbers	ℕ = {0, 1, 2, 3, …}
+# C	ℂ	Complex numbers	ℂ = {a + bi : a, b ∈ ℝ}
+# D	∂	Partial derivative or boundary operator	∂f/∂x is the partial derivative of f with respect to x
+# E	∈ or ℯ or Σ or ∃	Element of or Euler’s number or Summation or Exists	x ∈ S means x is an element of S; ℯ ≈ 2.71828; Σn=1∞an is the sum of an infinite series; ∃x(P(x)) means there exists an x such that P(x) is true
+# F	ℱ or φ or ∀	Fourier transform or Phi (Greek letter) or For all	ℱ(f) is the Fourier transform of f; φ ≈ 1.61803 is the golden ratio; ∀x(P(x)) means for all x, P(x) is true
+# G	Γ or γ	Gamma (Greek letter) or Gamma function	Γ(n) = (n-1)! for n ∈ ℕ; γ ≈ 0.57722 is the Euler-Mascheroni constant
+# H			
+# ℋ
+
+# or
+
+# ℏ
+
+# or
+
+# η
+
+# |
+
+# Hilbert space
+
+# or
+
+# Reduced Planck constant
+
+# or
+
+# Eta (Greek letter)
+
+# |
+
+# ℋ
+
+# is a vector space with an inner product;
+
+# ℏ
+
+# =
+
+# h/2π
+
+# where h is Planck’s constant;
+
+# η
+
+# is often used as a coefficient of friction |
+
+# I |
+
+# ∫
+
+# or i |
+
+# Integral sign
+
+# or Imaginary unit |
+
+# ∫f(x)dx is the integral of f with respect to x; i² = -1 |
+
+# J |
+
+# √(-1)
+
+# or j |
+
+# Square root of -1 or Imaginary unit |
+
+# √(-1)
+
+# and j are both equal to i |
+
+# K |
+
+# 𝕂 or κ |
+
+# Field (mathematics) or Kappa (Greek letter) |
+
+# 𝕂 is a set with two operations called addition and multiplication that satisfy certain properties; κ is often used as a curvature parameter |
+
+# L |
+
+# ℒ or λ |
+
+# Laplace transform or Lambda (Greek letter) |
+
+# ℒ(f) is the Laplace transform of f; λ is often used as a wavelength or eigenvalue parameter |
+
+# M |
+
+# ℳ or μ |
+
+# Möbius function or Mu (Greek letter) |
+
+# ℳ(n) is a function that indicates whether n has an even number of distinct prime factors (-1), an odd number (-1), or zero (0); μ is often used as a mean value or magnetic permeability parameter |
+
+# N |
+
+# 𝔑 or ν |
+
+# Set of natural numbers with zero excluded or Nu (Greek letter) |
+
+# 𝔑 = {1, 2, 3, …}; ν is often used as a frequency parameter |
+
+# O |
+
+# ∘ or ω |
+
+# Function composition or Omega (Greek letter) |
+
+# f∘g(x) = f(g(x)) for functions f and g; ω is often used as an angular velocity parameter |
+
+# P |
+
+# ℙ or π |
+
+# Set of prime numbers or Pi (Greek letter) |
+
+# ℙ = {2, 3, 5, 7, …}; π ≈ 3.14159… is the ratio of a circle’s circumference to its diameter
