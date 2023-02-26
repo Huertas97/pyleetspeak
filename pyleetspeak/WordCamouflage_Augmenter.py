@@ -14,6 +14,14 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import yake
 
+import logging
+
+#### Just some code to print debug information to stdout
+logging.basicConfig(format='%(asctime)s - %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S',
+                    level=logging.INFO,
+                    )
+#### /print debug information to stdout
 languages_codes_nltk = {
     "es": "spanish",
     "fr": "french",
@@ -48,6 +56,11 @@ languages_codes_nltk = {
     # "sk": "slovak"
 }
 
+# class Resiliance_Method(Enum):
+#         easy = ["leetspeak"],
+#         intermediate =        ["punct_camo"],
+#         advanced =        ["leetspeak-basic", "punct_camo"],
+#         expert = ["leetspeak-covid_basic", "punct_camo"],
 
 class augmenter(object):
     """
@@ -63,6 +76,10 @@ class augmenter(object):
         max_top_n: int = 5,
         seed: int = None,
         lang: str = "en",
+        
+        # method 
+        method: str = None,
+        
         # LeetSpeaker parameters
         leet_mode: str = None,  # Mode of leetspeak. If none, random mode is applied
         leet_change_prb: float = 0.8,
@@ -121,9 +138,10 @@ class augmenter(object):
             )
         elif self.extractor_type == "keybert":
             self.kw_model = KeyBERT(model=kw_model_name)
-
+            
+        self.method = method
         self.leet_punt_prb = leet_punt_prb
-        # self.leet_mode = leet_mode
+        self.leet_mode = leet_mode
         self.leet_change_prb = leet_change_prb
         self.leet_change_frq = leet_change_frq
         self.leet_uniform_change = leet_uniform_change
@@ -255,31 +273,46 @@ class augmenter(object):
         return new_s
 
     def get_random_method(self):
-        # Probability of applyinh leetspeak or punct camouflage
-        num = self.rng.rand()
-        if num <= self.leet_punt_prb:
-            methods = [
-                ["leetspeak"],
-                ["punct_camo"],
-                ["leetspeak-basic", "punct_camo"],
-                ["leetspeak-covid_basic", "punct_camo"],
-            ]
-            method_idx = self.rng.choice(
-                [0, 1, 2, 3],
-                size=1,
-                replace=False,
-                p=[
-                    self.leet_prb,
-                    self.punct_prb,
-                    self.leet_basic_punt_prb,
-                    self.leet_covid_basic_punt_prb,
-                ],
-            ).squeeze()
-            method = methods[method_idx]
+        
+        methods = [
+                ["basic_leetspeak"], 
+                ["intermediate_leetspeak", "punct_camo"],
+                ["advanced_leetspeak", "punct_camo", "inv_camo"]
+        ]
+        method = self.rng.choice(
+                        methods, size=1, replace=False, p=[0.25, 0.5, 0.25]
+        )[0]
+        
 
-        else:
-            method = ["inv_camo"]
+#         # Probability of applyinh leetspeak or punct camouflage
+#         num = self.rng.rand()
+#         if num <= self.leet_punt_prb:
+#             methods = [
+#                 # ["leetspeak"],
+#                 # ["punct_camo"],
+#                 # ["leetspeak-basic", "punct_camo"],
+#                 # ["leetspeak-covid_basic", "punct_camo"],
+#                 ["basic_leetspeak"], 
+#                 ["intermediate_leetspeak", "punct_camo"],
+#                 ["advanced_leetspeak", "punct_camo", "inv_camo"]
+#             ]
+#             method_idx = self.rng.choice(
+#                 [0, 1, 2, 3],
+#                 size=1,
+#                 replace=False,
+#                 p=[
+#                     self.leet_prb,
+#                     self.punct_prb,
+#                     self.leet_basic_punt_prb,
+#                     self.leet_covid_basic_punt_prb,
+#                 ],
+#             ).squeeze()
+#             method = methods[method_idx]
 
+#         else:
+#             method = ["inv_camo"]
+
+        logging.info(f"General method: {method}")
         return method
 
     def get_random_leetspeak(self, mode: str = None):
@@ -295,13 +328,15 @@ class augmenter(object):
             mode = self.rng.choice(
                 modes, size=1, replace=False, p=[0.25, 0.25, 0.2, 0.2, 0.1]
             ).squeeze()
+        
         uniform_change = self.rng.choice(
             [True, False],
             size=1,
             replace=False,
             p=[self.leet_uniform_change, 1 - self.leet_uniform_change],
         ).squeeze()
-
+        
+        logging.info(f"Leetspeak Mode: {mode}")
         leeter = LeetSpeaker(
             change_prb=self.leet_change_prb,
             change_frq=self.leet_change_frq,
@@ -362,9 +397,17 @@ class augmenter(object):
         # if kw to camouflage is <=1 return None because no change will be applied
         # if len(kw) <= 1:
         #   return None
-
-        method_tag = list(self.get_random_method())
-
+        if not self.method:
+            method_tag = list(self.get_random_method())
+        else:
+            # Augmenter Resiliance Attacks
+            # ["basic"],
+            # ["intermediate"],
+            # ["advanced"], 
+            # ["expert"]
+            method_tag = self.method
+        # logging.info(f"Method: {method_tag}")    
+            
         leet_kw = kw
         # print("Leet kw -->", leet_kw)
         all_params = {}
@@ -395,7 +438,45 @@ class augmenter(object):
 
                 # Save arameters
                 all_params[m] = params
+            
+            ######## START Resiliance #########
+            if m == "basic_leetspeak":
+                leeter = self.get_random_leetspeak(mode="basic_leetspeak")
+                params = leeter.__dict__
 
+                leet_kw = leeter.text2leet(leet_kw)
+
+                # Save arameters
+                all_params[m] = params
+                
+            if m == "intermediate_leetspeak":
+                leeter = self.get_random_leetspeak(mode="intermediate_leetspeak")
+                params = leeter.__dict__
+
+                leet_kw = leeter.text2leet(leet_kw)
+
+                # Save arameters
+                all_params[m] = params
+                
+        
+            if m == "advanced_leetspeak":
+                leeter = self.get_random_leetspeak(mode="advanced_leetspeak")
+                params = leeter.__dict__
+
+                leet_kw = leeter.text2leet(leet_kw)
+
+                # Save arameters
+                all_params[m] = params
+                
+            if m == "expert_leetspeak":
+                leeter = self.get_random_leetspeak(mode="expert_leetspeak")
+                params = leeter.__dict__
+
+                leet_kw = leeter.text2leet(leet_kw)
+
+                # Save arameters
+                all_params[m] = params
+            ######## END of Resiliance #########
             if m == "punct_camo":
 
                 puntc_camo = self.get_random_punt_camo()
