@@ -14,6 +14,10 @@ from .modes import (
     advanced,
     covid_basic_word_camouflage,
     covid_intermediate_word_camouflage,
+    basic_leetspeak,
+    intermediate_leetspeak,
+    advanced_leetspeak,
+    expert_leetspeak
 )
 import copy
 from collections import defaultdict
@@ -79,6 +83,10 @@ class LeetSpeaker(object):
             "advanced",
             "covid_basic",
             "covid_intermediate",
+            "basic_leetspeak",
+            "intermediate_leetspeak",
+            "advanced_leetspeak",
+            "expert_leetspeak",
             None,
         ]:
             raise RuntimeError(
@@ -98,6 +106,20 @@ class LeetSpeaker(object):
         elif self.mode == "covid_intermediate":
             self.list_changes = copy.deepcopy(
                 covid_intermediate_word_camouflage)
+            
+        # Resiliance
+        elif self.mode == "basic_leetspeak":
+            self.list_changes = copy.deepcopy(
+                basic_leetspeak)
+        elif self.mode == "intermediate_leetspeak":
+            self.list_changes = copy.deepcopy(
+                intermediate_leetspeak)
+        elif self.mode == "advanced_leetspeak":
+            self.list_changes = copy.deepcopy(
+                advanced_leetspeak)
+        elif self.mode == "expert_leetspeak":
+            self.list_changes = copy.deepcopy(
+                advanced_leetspeak)            
         # No pre-defined changes will be used
         elif self.mode == None:
             self.list_changes = []
