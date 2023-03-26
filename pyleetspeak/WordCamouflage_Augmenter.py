@@ -312,7 +312,7 @@ class augmenter(object):
 #         else:
 #             method = ["inv_camo"]
 
-        logging.info(f"General method: {method}")
+        # logging.info(f"General method: {method}")
         return method
 
     def get_random_leetspeak(self, mode: str = None):
@@ -336,7 +336,7 @@ class augmenter(object):
             p=[self.leet_uniform_change, 1 - self.leet_uniform_change],
         ).squeeze()
         
-        logging.info(f"Leetspeak Mode: {mode}")
+        # logging.info(f"Leetspeak Mode: {mode}")
         leeter = LeetSpeaker(
             change_prb=self.leet_change_prb,
             change_frq=self.leet_change_frq,
