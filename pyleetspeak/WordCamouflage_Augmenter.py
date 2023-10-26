@@ -14,13 +14,45 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import yake
 
+# Create logger
 import logging
+import sys
 
-#### Just some code to print debug information to stdout
-logging.basicConfig(format='%(asctime)s - %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S',
-                    level=logging.INFO,
-                    )
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+# Create handlers
+c_handler = logging.StreamHandler(sys.stdout)
+c_handler.setLevel(logging.DEBUG)
+
+
+# Create custom formatter that sets the color of the log message based on its level
+class ColoredFormatter(logging.Formatter):
+    def format(self, record):
+        if record.levelno == logging.DEBUG:
+            color = "\x1b[34m"  # blue
+        elif record.levelno == logging.INFO:
+            color = "\x1b[32m"  # green
+        elif record.levelno == logging.WARNING:
+            color = "\x1b[33m"  # yellow
+        else:
+            color = "\x1b[31m"  # red
+        message = super().format(record)
+        message = color + message + "\x1b[0m"  # reset color
+        return message
+
+
+# Create formatters and add them to handlers get line of code where the log was created
+c_format = ColoredFormatter("%(asctime)s - %(name)s - %(levelname)s - %(lineno)d - %(message)s ")
+f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+c_handler.setFormatter(c_format)
+
+# Create logger and add handlers to it
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+logger.addHandler(c_handler)
+
+
 #### /print debug information to stdout
 languages_codes_nltk = {
     "es": "spanish",
@@ -100,6 +132,9 @@ class augmenter(object):
         punct_prb=0.25,
         leet_basic_punt_prb=0.15,
         leet_covid_basic_punt_prb=0.15,
+
+        return_kws: bool = False,
+        verbose_level: int = 0, # 1 = INFO, 2 = DEBUG
     ):
         """
         :param extractor_type: Type of extractor to use. "yake" or "keybert".
@@ -138,6 +173,9 @@ class augmenter(object):
             )
         elif self.extractor_type == "keybert":
             self.kw_model = KeyBERT(model=kw_model_name)
+
+        elif self.extractor_type == "random":
+            self.kw_model = None
             
         self.method = method
         self.leet_punt_prb = leet_punt_prb
@@ -163,6 +201,9 @@ class augmenter(object):
         else:
             rng = np.random.RandomState()
         self.rng = rng
+
+        self.return_kws = return_kws
+        self.verbose_level = verbose_level
 
     def get_keywords(
         self, sentence, stop_words, keyphrase_ngram_range, important_kws, **kwargs
@@ -196,7 +237,15 @@ class augmenter(object):
                 top_n=n_kw,
                 **kwargs,
             )
+        
+        elif self.extractor_type == "random":
+            # extract random keywords
+            kws = []
+            for i in range(n_kw):
+                kw = random.choice(sentence.split())
+                kws.append((kw, 1.0))
 
+        kws = list( set(kws) )
         kws = [kw for kw, sim_score in kws]
 
         if important_kws:
@@ -208,6 +257,7 @@ class augmenter(object):
                 if imp_kw.lower() not in kws
             ]
 
+        logger.debug(f"Kws --> {kws}") if self.verbose_level == 2 else None
         return kws
 
     def idxs_overlap(self, idx_1, idx_2):
@@ -590,4 +640,7 @@ class augmenter(object):
         # Obtain leet sentence
         leet_sentence = self.leet_replacement(ori_data)
 
-        return leet_sentence
+        if self.return_kws:
+            return leet_sentence, ori_data 
+        else:
+            return leet_sentence
